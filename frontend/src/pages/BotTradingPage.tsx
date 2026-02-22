@@ -103,6 +103,7 @@ export const BotTradingPage: React.FC = () => {
         cryptocurrency: selectedCrypto,
         principalAmount: parseFloat(amount),
         tradingPeriodHours: period,
+        riskAcknowledgedAt: new Date(),
       })
     );
 

@@ -106,9 +106,12 @@ export const fetchInvestmentDetail = createAsyncThunk(
 export const cancelInvestment = createAsyncThunk(
   'botInvestment/cancel',
   async (
-    { investmentId, reason }: { investmentId: string; reason?: string },
+    investmentIdOrData: string | { investmentId: string; reason?: string },
     { rejectWithValue }
   ) => {
+    const { investmentId, reason } = typeof investmentIdOrData === 'string' 
+      ? { investmentId: investmentIdOrData, reason: undefined }
+      : investmentIdOrData;
     try {
       const response = await botAPI.cancelInvestment(investmentId, reason);
       return response.data.investment;
