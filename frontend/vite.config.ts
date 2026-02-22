@@ -12,6 +12,12 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    allowedHosts: [
+      'frontend-production-40a3.up.railway.app',
+      '.railway.app'
+    ]
+  },
   build: {
     sourcemap: true,
     minify: 'terser',
