@@ -1,0 +1,31 @@
+# GitHub'a Yükleme Komutları
+# Bu komutları sırayla PowerShell'de çalıştırın
+
+# 1. Proje klasörüne git
+cd C:\Users\Monster\Desktop\KREX
+
+# 2. Git kullanıcı bilgilerini ayarla (sadece ilk kez)
+git config --global user.name "Adınız Soyadınız"
+git config --global user.email "github-email@example.com"
+
+# 3. Git repository'sini başlat
+git init
+
+# 4. Tüm dosyaları ekle
+git add .
+
+# 5. İlk commit'i oluştur
+git commit -m "Initial commit - Crypto Trading Platform"
+
+# 6. Ana branch'i main olarak ayarla
+git branch -M main
+
+# 7. GitHub repository'sine bağlan
+# ÖNEMLİ: Aşağıdaki URL'yi kendi GitHub repository URL'nizle değiştirin!
+git remote add origin https://github.com/[KULLANICI-ADINIZ]/[REPO-ADI].git
+
+# 8. GitHub'a yükle
+git push -u origin main
+
+# NOT: Push yaparken GitHub kullanıcı adı ve Personal Access Token isteyecek
+# Token oluşturmak için: GitHub → Settings → Developer settings → Personal access tokens
