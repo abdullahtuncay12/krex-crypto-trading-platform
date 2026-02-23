@@ -8,6 +8,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { BotTradingPage } from './pages/BotTradingPage';
 import { InvestmentDashboard } from './pages/InvestmentDashboard';
+import { DepositWithdrawPage } from './pages/DepositWithdrawPage';
+import { SupportPage } from './pages/SupportPage';
 import { Navbar, PrivateRoute } from './components';
 
 function AppContent() {
@@ -29,6 +31,15 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route 
+            path="/deposit-withdraw" 
+            element={
+              <PrivateRoute>
+                <DepositWithdrawPage />
+              </PrivateRoute>
+            } 
+          />
+          <Route path="/support" element={<SupportPage />} />
           <Route 
             path="/bot/create" 
             element={

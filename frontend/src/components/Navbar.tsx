@@ -44,6 +44,18 @@ export const Navbar: React.FC = () => {
                   Dashboard
                 </Link>
                 <Link
+                  to="/deposit-withdraw"
+                  className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition"
+                >
+                  Yatırma/Çekme
+                </Link>
+                <Link
+                  to="/support"
+                  className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition"
+                >
+                  Destek
+                </Link>
+                <Link
                   to="/bot/create"
                   className="px-4 py-2 text-sm font-medium text-crypto-dark-900 bg-crypto-yellow-500 hover:bg-crypto-yellow-600 rounded transition font-semibold"
                 >
@@ -85,6 +97,12 @@ export const Navbar: React.FC = () => {
                   className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition"
                 >
                   Ana Sayfa
+                </Link>
+                <Link
+                  to="/support"
+                  className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition"
+                >
+                  Destek
                 </Link>
                 <Link
                   to="/login"
