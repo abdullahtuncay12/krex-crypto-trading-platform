@@ -58,9 +58,14 @@ export const Navbar: React.FC = () => {
                     ${user?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                   </span>
                 </div>
-                <span className="text-sm text-gray-600">
-                  <span className="font-semibold">{user?.email}</span>
-                </span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-sm text-gray-700 font-medium">{user?.name}</span>
+                </div>
                 {user?.role === 'premium' && (
                   <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
                     Premium
