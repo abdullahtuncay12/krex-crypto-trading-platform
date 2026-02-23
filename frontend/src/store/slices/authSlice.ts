@@ -6,6 +6,7 @@ interface User {
   email: string;
   name: string;
   role: 'normal' | 'premium';
+  balance: number;
 }
 
 interface AuthState {
