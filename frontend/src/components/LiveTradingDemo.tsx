@@ -41,20 +41,63 @@ interface PricePoint {
 
 export const LiveTradingDemo: React.FC = () => {
   const { language } = useLanguage();
-  const [currentPrice, setCurrentPrice] = useState(43250.00);
+  const [currentPrice, setCurrentPrice] = useState(0);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [botStatus, setBotStatus] = useState<'analyzing' | 'buying' | 'selling' | 'waiting'>('analyzing');
   const [totalProfit, setTotalProfit] = useState(0);
   const [tradeCount, setTradeCount] = useState(0);
   const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
   const [tradeMarkers, setTradeMarkers] = useState<{ x: number; y: number; type: 'BUY' | 'SELL' }[]>([]);
+  const [initialInvestment] = useState(10000); // $10,000 başlangıç yatırımı
+  const [currentValue, setCurrentValue] = useState(10000);
+  const [startTime] = useState(new Date());
+  const [elapsedTime, setElapsedTime] = useState('00:00:00');
+  const [openPosition, setOpenPosition] = useState<Trade | null>(null);
 
-  // Simüle edilmiş fiyat değişimi
+  // Gerçek BTC fiyatını çek
   useEffect(() => {
+    const fetchRealPrice = async () => {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const data = await response.json();
+        if (data.bitcoin && data.bitcoin.usd) {
+          setCurrentPrice(data.bitcoin.usd);
+        }
+      } catch (error) {
+        console.error('Failed to fetch BTC price:', error);
+        setCurrentPrice(64692.46); // Fallback fiyat
+      }
+    };
+
+    fetchRealPrice();
+    const priceInterval = setInterval(fetchRealPrice, 30000); // Her 30 saniyede bir güncelle
+
+    return () => clearInterval(priceInterval);
+  }, []);
+
+  // Geçen süreyi hesapla
+  useEffect(() => {
+    const timeInterval = setInterval(() => {
+      const now = new Date();
+      const diff = now.getTime() - startTime.getTime();
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      setElapsedTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    }, 1000);
+
+    return () => clearInterval(timeInterval);
+  }, [startTime]);
+
+  // Simüle edilmiş fiyat değişimi (gerçek fiyat etrafında küçük dalgalanmalar)
+  useEffect(() => {
+    if (currentPrice === 0) return;
+
     const priceInterval = setInterval(() => {
       setCurrentPrice(prev => {
-        const change = (Math.random() - 0.5) * 100;
-        const newPrice = Math.max(42000, Math.min(45000, prev + change));
+        // Gerçek fiyat etrafında %0.1 dalgalanma
+        const change = (Math.random() - 0.5) * (prev * 0.001);
+        const newPrice = prev + change;
         
         // Fiyat geçmişine ekle
         const now = new Date();
@@ -66,27 +109,34 @@ export const LiveTradingDemo: React.FC = () => {
         
         return newPrice;
       });
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(priceInterval);
-  }, []);
+  }, [currentPrice]);
 
-  // Simüle edilmiş bot işlemleri
+  // Simüle edilmiş bot işlemleri - Kar odaklı
   useEffect(() => {
+    if (currentPrice === 0 || priceHistory.length < 5) return;
+
     const tradeInterval = setInterval(() => {
       const random = Math.random();
       
-      if (random > 0.7) {
-        // BUY signal
+      // Açık pozisyon yoksa ve fiyat düşüyorsa AL
+      if (!openPosition && random > 0.6) {
         setBotStatus('buying');
         setTimeout(() => {
+          const investAmount = 1000 + Math.random() * 2000; // $1000-$3000 arası yatırım
+          const btcAmount = investAmount / currentPrice;
+          
           const newTrade: Trade = {
             id: Date.now(),
             type: 'BUY',
             price: currentPrice,
-            amount: Math.random() * 0.05 + 0.01,
+            amount: btcAmount,
             timestamp: new Date(),
           };
+          
+          setOpenPosition(newTrade);
           setTrades(prev => [newTrade, ...prev].slice(0, 5));
           setTradeCount(prev => prev + 1);
           
@@ -95,37 +145,47 @@ export const LiveTradingDemo: React.FC = () => {
           
           setBotStatus('waiting');
         }, 1000);
-      } else if (random < 0.3 && trades.length > 0) {
-        // SELL signal
-        setBotStatus('selling');
-        setTimeout(() => {
-          const lastBuy = trades.find(t => t.type === 'BUY');
-          if (lastBuy) {
-            const profit = (currentPrice - lastBuy.price) * lastBuy.amount;
+      } 
+      // Açık pozisyon varsa ve kar varsa SAT
+      else if (openPosition && random < 0.4) {
+        const potentialProfit = (currentPrice - openPosition.price) * openPosition.amount;
+        const profitPercentage = (potentialProfit / (openPosition.price * openPosition.amount)) * 100;
+        
+        // En az %0.3 kar varsa sat
+        if (profitPercentage > 0.3) {
+          setBotStatus('selling');
+          setTimeout(() => {
+            const profit = potentialProfit;
             const newTrade: Trade = {
               id: Date.now(),
               type: 'SELL',
               price: currentPrice,
-              amount: lastBuy.amount,
+              amount: openPosition.amount,
               profit: profit,
               timestamp: new Date(),
             };
+            
             setTrades(prev => [newTrade, ...prev].slice(0, 5));
             setTotalProfit(prev => prev + profit);
+            setCurrentValue(prev => prev + profit);
             setTradeCount(prev => prev + 1);
+            setOpenPosition(null);
             
             // Grafik üzerinde işaret ekle
             setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'SELL' }]);
-          }
-          setBotStatus('waiting');
-        }, 1000);
+            
+            setBotStatus('waiting');
+          }, 1000);
+        } else {
+          setBotStatus('analyzing');
+        }
       } else {
         setBotStatus('analyzing');
       }
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(tradeInterval);
-  }, [currentPrice, trades, priceHistory.length]);
+  }, [currentPrice, openPosition, priceHistory.length]);
 
   const texts = {
     tr: {
@@ -135,6 +195,10 @@ export const LiveTradingDemo: React.FC = () => {
       botStatus: 'Bot Durumu',
       totalProfit: 'Toplam Kar',
       tradeCount: 'İşlem Sayısı',
+      initialInvestment: 'Başlangıç Yatırımı',
+      currentValue: 'Güncel Değer',
+      runningTime: 'Çalışma Süresi',
+      profitPercentage: 'Kar Oranı',
       recentTrades: 'Son İşlemler',
       type: 'Tür',
       price: 'Fiyat',
@@ -145,7 +209,7 @@ export const LiveTradingDemo: React.FC = () => {
       buying: '🟢 ALIŞ Emri Veriliyor...',
       selling: '🔴 SATIŞ Emri Veriliyor...',
       waiting: '⏳ Sinyal Bekleniyor...',
-      demoNote: '* Bu bir demo simülasyonudur. Gerçek işlemler değildir.',
+      demoNote: '* Bu bir demo simülasyonudur. Gerçek BTC fiyatı kullanılmaktadır ancak işlemler simüledir.',
     },
     en: {
       title: '🤖 Live Trading Bot Demo',
@@ -154,6 +218,10 @@ export const LiveTradingDemo: React.FC = () => {
       botStatus: 'Bot Status',
       totalProfit: 'Total Profit',
       tradeCount: 'Trade Count',
+      initialInvestment: 'Initial Investment',
+      currentValue: 'Current Value',
+      runningTime: 'Running Time',
+      profitPercentage: 'Profit %',
       recentTrades: 'Recent Trades',
       type: 'Type',
       price: 'Price',
@@ -164,7 +232,7 @@ export const LiveTradingDemo: React.FC = () => {
       buying: '🟢 Placing BUY Order...',
       selling: '🔴 Placing SELL Order...',
       waiting: '⏳ Waiting for Signal...',
-      demoNote: '* This is a demo simulation. Not real trades.',
+      demoNote: '* This is a demo simulation. Real BTC price is used but trades are simulated.',
     },
   };
 
@@ -271,23 +339,37 @@ export const LiveTradingDemo: React.FC = () => {
         </div>
 
         <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500">
-          <p className="text-gray-400 text-xs mb-1">{t.botStatus}</p>
-          <p className="text-sm font-semibold text-white mt-2 animate-pulse">
-            {getStatusText()}
+          <p className="text-gray-400 text-xs mb-1">{t.initialInvestment}</p>
+          <p className="text-xl font-bold text-white">
+            ${initialInvestment.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">{t.runningTime}: {elapsedTime}</p>
+        </div>
+
+        <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500">
+          <p className="text-gray-400 text-xs mb-1">{t.currentValue}</p>
+          <p className="text-xl font-bold text-white">
+            ${currentValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+          <p className={`text-xs mt-1 ${totalProfit >= 0 ? 'text-buy' : 'text-sell'}`}>
+            {t.profitPercentage}: {((totalProfit / initialInvestment) * 100).toFixed(2)}%
           </p>
         </div>
 
         <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500">
           <p className="text-gray-400 text-xs mb-1">{t.totalProfit}</p>
           <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-buy' : 'text-sell'}`}>
-            ${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
+          <p className="text-xs text-gray-500 mt-1">{t.tradeCount}: {tradeCount}</p>
         </div>
+      </div>
 
-        <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500">
-          <p className="text-gray-400 text-xs mb-1">{t.tradeCount}</p>
-          <p className="text-2xl font-bold text-white">{tradeCount}</p>
-        </div>
+      {/* Bot Status */}
+      <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500 mb-6">
+        <p className="text-sm font-semibold text-white animate-pulse">
+          {getStatusText()}
+        </p>
       </div>
 
       {/* Live Price Chart */}
