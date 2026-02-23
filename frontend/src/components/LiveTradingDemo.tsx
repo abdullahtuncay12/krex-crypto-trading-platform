@@ -114,15 +114,15 @@ export const LiveTradingDemo: React.FC = () => {
     return () => clearInterval(priceInterval);
   }, [currentPrice]);
 
-  // Simüle edilmiş bot işlemleri - Kar odaklı
+  // Simüle edilmiş bot işlemleri - Kar odaklı ve daha sık
   useEffect(() => {
-    if (currentPrice === 0 || priceHistory.length < 5) return;
+    if (currentPrice === 0 || priceHistory.length < 3) return;
 
     const tradeInterval = setInterval(() => {
       const random = Math.random();
       
-      // Açık pozisyon yoksa ve fiyat düşüyorsa AL
-      if (!openPosition && random > 0.6) {
+      // Açık pozisyon yoksa ve şans varsa AL (daha sık)
+      if (!openPosition && random > 0.5) {
         setBotStatus('buying');
         setTimeout(() => {
           const investAmount = 1000 + Math.random() * 2000; // $1000-$3000 arası yatırım
@@ -144,15 +144,15 @@ export const LiveTradingDemo: React.FC = () => {
           setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'BUY' }]);
           
           setBotStatus('waiting');
-        }, 1000);
+        }, 800);
       } 
-      // Açık pozisyon varsa ve kar varsa SAT
-      else if (openPosition && random < 0.4) {
+      // Açık pozisyon varsa ve küçük kar varsa SAT
+      else if (openPosition && random < 0.5) {
         const potentialProfit = (currentPrice - openPosition.price) * openPosition.amount;
         const profitPercentage = (potentialProfit / (openPosition.price * openPosition.amount)) * 100;
         
-        // En az %0.3 kar varsa sat
-        if (profitPercentage > 0.3) {
+        // En az %0.2 kar varsa sat (daha düşük eşik)
+        if (profitPercentage > 0.2) {
           setBotStatus('selling');
           setTimeout(() => {
             const profit = potentialProfit;
@@ -175,21 +175,21 @@ export const LiveTradingDemo: React.FC = () => {
             setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'SELL' }]);
             
             setBotStatus('waiting');
-          }, 1000);
+          }, 800);
         } else {
           setBotStatus('analyzing');
         }
       } else {
         setBotStatus('analyzing');
       }
-    }, 6000);
+    }, 4000); // 4 saniyede bir kontrol et (daha sık)
 
     return () => clearInterval(tradeInterval);
   }, [currentPrice, openPosition, priceHistory.length]);
 
   const texts = {
     tr: {
-      title: '🤖 Canlı Trading Bot Demo',
+      title: 'Canlı Trading',
       subtitle: 'Botun gerçek zamanlı işlemlerini izleyin',
       currentPrice: 'Anlık Fiyat',
       botStatus: 'Bot Durumu',
@@ -212,7 +212,7 @@ export const LiveTradingDemo: React.FC = () => {
       demoNote: '* Bu bir demo simülasyonudur. Gerçek BTC fiyatı kullanılmaktadır ancak işlemler simüledir.',
     },
     en: {
-      title: '🤖 Live Trading Bot Demo',
+      title: 'Live Trading',
       subtitle: 'Watch the bot trade in real-time',
       currentPrice: 'Current Price',
       botStatus: 'Bot Status',
@@ -322,10 +322,20 @@ export const LiveTradingDemo: React.FC = () => {
 
   return (
     <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6 shadow-xl">
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">{t.title}</h2>
-        <p className="text-gray-400 text-sm">{t.subtitle}</p>
+      {/* Header with LIVE indicator */}
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="relative flex items-center">
+            <span className="flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white">{t.title}</h2>
+            <p className="text-gray-400 text-sm">{t.subtitle}</p>
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}
