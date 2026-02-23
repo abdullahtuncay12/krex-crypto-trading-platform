@@ -21,3 +21,4 @@ export { Navbar } from './Navbar';
 export { default as RiskDisclosureModal } from './RiskDisclosureModal';
 export { InvestmentCard } from './InvestmentCard';
 export { InvestmentValueChart } from './InvestmentValueChart';
+export { LiveTradingDemo } from './LiveTradingDemo';

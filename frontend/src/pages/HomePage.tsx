@@ -5,6 +5,7 @@ import { SignalDisplay, TradingSignal } from '../components/SignalDisplay';
 import { HistoricalChart } from '../components/HistoricalChart';
 import { PerformanceDisplay } from '../components/PerformanceDisplay';
 import { AlertList } from '../components/AlertList';
+import { LiveTradingDemo } from '../components/LiveTradingDemo';
 import { signalAPI } from '../api/client';
 
 export const HomePage: React.FC = () => {
@@ -123,6 +124,9 @@ export const HomePage: React.FC = () => {
                 />
               </>
             )}
+
+            {/* Live Trading Demo - Always visible */}
+            <LiveTradingDemo />
 
             {/* Welcome Message when no crypto selected */}
             {!selectedCrypto && (
