@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store, RootState } from './store';
 import { fetchCurrentUser } from './store/slices/authSlice';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { HomePage } from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -66,7 +67,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
     </Provider>
   );
 }

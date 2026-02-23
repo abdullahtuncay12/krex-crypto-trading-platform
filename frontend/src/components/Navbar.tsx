@@ -3,16 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../store/slices/authSlice';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, token } = useSelector((state: RootState) => state.auth);
+  const { language, setLanguage, t } = useLanguage();
   const isAuthenticated = !!token && !!user;
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'tr' ? 'en' : 'tr');
   };
 
   return (
@@ -35,31 +41,31 @@ export const Navbar: React.FC = () => {
                   to="/"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Ana Sayfa
+                  {t('nav.home')}
                 </Link>
                 <Link
                   to="/bot/dashboard"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Dashboard
+                  {t('nav.dashboard')}
                 </Link>
                 <Link
                   to="/deposit-withdraw"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Yatırma/Çekme
+                  {t('nav.deposit')}
                 </Link>
                 <Link
                   to="/support"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Destek
+                  {t('nav.support')}
                 </Link>
                 <Link
                   to="/bot/create"
                   className="px-3 py-2 text-sm font-medium text-crypto-dark-900 bg-crypto-yellow-500 hover:bg-crypto-yellow-600 rounded transition font-semibold whitespace-nowrap"
                 >
-                  Yeni Yatırım
+                  {t('nav.newInvestment')}
                 </Link>
                 <div className="flex items-center space-x-2 px-2 py-1.5 bg-crypto-dark-700 border border-buy/30 rounded whitespace-nowrap">
                   <svg className="w-4 h-4 text-buy flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -80,14 +86,21 @@ export const Navbar: React.FC = () => {
                 </div>
                 {user?.role === 'premium' && (
                   <span className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full whitespace-nowrap">
-                    PREMIUM
+                    {t('nav.premium')}
                   </span>
                 )}
+                <button
+                  onClick={toggleLanguage}
+                  className="px-2 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-crypto-dark-500"
+                  title="Change Language"
+                >
+                  {language === 'tr' ? '🇬🇧 EN' : '🇹🇷 TR'}
+                </button>
                 <button
                   onClick={handleLogout}
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Çıkış
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
@@ -96,25 +109,32 @@ export const Navbar: React.FC = () => {
                   to="/"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Ana Sayfa
+                  {t('nav.home')}
                 </Link>
                 <Link
                   to="/support"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Destek
+                  {t('nav.support')}
                 </Link>
+                <button
+                  onClick={toggleLanguage}
+                  className="px-2 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-crypto-dark-500"
+                  title="Change Language"
+                >
+                  {language === 'tr' ? '🇬🇧 EN' : '🇹🇷 TR'}
+                </button>
                 <Link
                   to="/login"
                   className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
                 >
-                  Giriş Yap
+                  {t('nav.login')}
                 </Link>
                 <Link
                   to="/register"
                   className="px-3 py-2 text-sm font-medium text-crypto-dark-900 bg-crypto-yellow-500 hover:bg-crypto-yellow-600 rounded transition font-semibold whitespace-nowrap"
                 >
-                  Üye Ol
+                  {t('nav.register')}
                 </Link>
               </>
             )}
