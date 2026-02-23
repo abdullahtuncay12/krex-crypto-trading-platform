@@ -1,5 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface Trade {
   id: number;
@@ -10,6 +33,12 @@ interface Trade {
   timestamp: Date;
 }
 
+interface PricePoint {
+  time: string;
+  price: number;
+  tradeType?: 'BUY' | 'SELL';
+}
+
 export const LiveTradingDemo: React.FC = () => {
   const { language } = useLanguage();
   const [currentPrice, setCurrentPrice] = useState(43250.00);
@@ -17,13 +46,25 @@ export const LiveTradingDemo: React.FC = () => {
   const [botStatus, setBotStatus] = useState<'analyzing' | 'buying' | 'selling' | 'waiting'>('analyzing');
   const [totalProfit, setTotalProfit] = useState(0);
   const [tradeCount, setTradeCount] = useState(0);
+  const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
+  const [tradeMarkers, setTradeMarkers] = useState<{ x: number; y: number; type: 'BUY' | 'SELL' }[]>([]);
 
   // Simüle edilmiş fiyat değişimi
   useEffect(() => {
     const priceInterval = setInterval(() => {
       setCurrentPrice(prev => {
         const change = (Math.random() - 0.5) * 100;
-        return Math.max(42000, Math.min(45000, prev + change));
+        const newPrice = Math.max(42000, Math.min(45000, prev + change));
+        
+        // Fiyat geçmişine ekle
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setPriceHistory(prevHistory => {
+          const newHistory = [...prevHistory, { time: timeStr, price: newPrice }];
+          return newHistory.slice(-30); // Son 30 veriyi tut
+        });
+        
+        return newPrice;
       });
     }, 2000);
 
@@ -48,6 +89,10 @@ export const LiveTradingDemo: React.FC = () => {
           };
           setTrades(prev => [newTrade, ...prev].slice(0, 5));
           setTradeCount(prev => prev + 1);
+          
+          // Grafik üzerinde işaret ekle
+          setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'BUY' }]);
+          
           setBotStatus('waiting');
         }, 1000);
       } else if (random < 0.3 && trades.length > 0) {
@@ -68,6 +113,9 @@ export const LiveTradingDemo: React.FC = () => {
             setTrades(prev => [newTrade, ...prev].slice(0, 5));
             setTotalProfit(prev => prev + profit);
             setTradeCount(prev => prev + 1);
+            
+            // Grafik üzerinde işaret ekle
+            setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'SELL' }]);
           }
           setBotStatus('waiting');
         }, 1000);
@@ -77,7 +125,7 @@ export const LiveTradingDemo: React.FC = () => {
     }, 5000);
 
     return () => clearInterval(tradeInterval);
-  }, [currentPrice, trades]);
+  }, [currentPrice, trades, priceHistory.length]);
 
   const texts = {
     tr: {
@@ -131,6 +179,79 @@ export const LiveTradingDemo: React.FC = () => {
     }
   };
 
+  // Chart.js konfigürasyonu
+  const chartData = {
+    labels: priceHistory.map(p => p.time),
+    datasets: [
+      {
+        label: 'BTC/USD',
+        data: priceHistory.map(p => p.price),
+        borderColor: '#F0B90B',
+        backgroundColor: 'rgba(240, 185, 11, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+        backgroundColor: 'rgba(23, 25, 35, 0.9)',
+        titleColor: '#F0B90B',
+        bodyColor: '#fff',
+        borderColor: '#2B3139',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context: any) {
+            return `$${context.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          color: 'rgba(43, 49, 57, 0.3)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#848E9C',
+          maxTicksLimit: 6,
+        },
+      },
+      y: {
+        display: true,
+        grid: {
+          color: 'rgba(43, 49, 57, 0.3)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#848E9C',
+          callback: function(value: any) {
+            return '$' + value.toLocaleString('en-US');
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest' as const,
+      axis: 'x' as const,
+      intersect: false,
+    },
+  };
+
   return (
     <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6 shadow-xl">
       {/* Header */}
@@ -166,6 +287,41 @@ export const LiveTradingDemo: React.FC = () => {
         <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500">
           <p className="text-gray-400 text-xs mb-1">{t.tradeCount}</p>
           <p className="text-2xl font-bold text-white">{tradeCount}</p>
+        </div>
+      </div>
+
+      {/* Live Price Chart */}
+      <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500 mb-6 relative">
+        <h3 className="text-white font-semibold mb-4">{language === 'tr' ? 'Canlı Fiyat Grafiği' : 'Live Price Chart'}</h3>
+        <div className="h-64 relative">
+          {priceHistory.length > 0 ? (
+            <>
+              <Line data={chartData} options={chartOptions} />
+              {/* Trade Markers */}
+              {tradeMarkers.slice(-10).map((marker, index) => (
+                <div
+                  key={index}
+                  className={`absolute animate-ping-once ${
+                    marker.type === 'BUY' ? 'bg-buy' : 'bg-sell'
+                  }`}
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    left: `${(marker.x / priceHistory.length) * 100}%`,
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: 0.8,
+                    boxShadow: `0 0 10px ${marker.type === 'BUY' ? '#0ECB81' : '#F6465D'}`,
+                  }}
+                />
+              ))}
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">{language === 'tr' ? 'Veri yükleniyor...' : 'Loading data...'}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -240,6 +396,23 @@ export const LiveTradingDemo: React.FC = () => {
         }
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes ping-once {
+          0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 0.5;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+          }
+        }
+        .animate-ping-once {
+          animation: ping-once 1s ease-out;
         }
       `}</style>
     </div>
