@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
@@ -10,10 +10,12 @@ export const Navbar: React.FC = () => {
   const dispatch = useDispatch();
   const { user, token } = useSelector((state: RootState) => state.auth);
   const { language, setLanguage, t } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAuthenticated = !!token && !!user;
 
   const handleLogout = () => {
     dispatch(logout());
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
@@ -21,20 +23,24 @@ export const Navbar: React.FC = () => {
     setLanguage(language === 'tr' ? 'en' : 'tr');
   };
 
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
     <nav className="bg-crypto-dark-800 border-b border-crypto-dark-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 overflow-x-auto">
+        <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0" onClick={closeMobileMenu}>
             <svg className="w-8 h-8 text-crypto-yellow-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
             </svg>
             <span className="text-xl font-bold text-white whitespace-nowrap">Crypto Signals</span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-2 flex-nowrap">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-2 flex-nowrap">
             {isAuthenticated ? (
               <>
                 <Link
@@ -139,8 +145,138 @@ export const Navbar: React.FC = () => {
               </>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-crypto-dark-600 focus:outline-none"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-crypto-dark-500">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.home')}
+                </Link>
+                <Link
+                  to="/bot/dashboard"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.dashboard')}
+                </Link>
+                <Link
+                  to="/deposit-withdraw"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.deposit')}
+                </Link>
+                <Link
+                  to="/support"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.support')}
+                </Link>
+                <Link
+                  to="/bot/create"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-crypto-dark-900 bg-crypto-yellow-500 hover:bg-crypto-yellow-600"
+                >
+                  {t('nav.newInvestment')}
+                </Link>
+                <div className="px-3 py-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-crypto-yellow-500 to-crypto-yellow-600 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-crypto-dark-900" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-200">{user?.name}</span>
+                    </div>
+                    {user?.role === 'premium' && (
+                      <span className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full">
+                        {t('nav.premium')}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 text-sm text-buy font-semibold">
+                    ${user?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                  </div>
+                </div>
+                <button
+                  onClick={toggleLanguage}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {language === 'tr' ? '🇬🇧 English' : '🇹🇷 Türkçe'}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.logout')}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.home')}
+                </Link>
+                <Link
+                  to="/support"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.support')}
+                </Link>
+                <button
+                  onClick={toggleLanguage}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {language === 'tr' ? '🇬🇧 English' : '🇹🇷 Türkçe'}
+                </button>
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
+                >
+                  {t('nav.login')}
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-crypto-dark-900 bg-crypto-yellow-500 hover:bg-crypto-yellow-600"
+                >
+                  {t('nav.register')}
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
