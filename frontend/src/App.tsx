@@ -23,7 +23,7 @@ function AppContent() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-crypto-dark-900">
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
