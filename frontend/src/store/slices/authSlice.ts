@@ -15,8 +15,21 @@ interface AuthState {
   error: string | null;
 }
 
+// Load user from localStorage if available
+const loadUserFromStorage = (): User | null => {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
+
 const initialState: AuthState = {
-  user: null,
+  user: loadUserFromStorage(),
   token: localStorage.getItem('token'),
   loading: false,
   error: null,
@@ -68,6 +81,7 @@ const authSlice = createSlice({
       state.token = null;
       state.error = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
     clearError: (state) => {
       state.error = null;
@@ -84,6 +98,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     });
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
@@ -100,6 +115,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
@@ -114,6 +130,7 @@ const authSlice = createSlice({
     builder.addCase(fetchCurrentUser.fulfilled, (state, action: PayloadAction<{ user: User }>) => {
       state.loading = false;
       state.user = action.payload.user;
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     });
     builder.addCase(fetchCurrentUser.rejected, (state, action) => {
       state.loading = false;
@@ -121,6 +138,7 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     });
   },
 });

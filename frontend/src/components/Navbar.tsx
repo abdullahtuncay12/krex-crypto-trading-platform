@@ -7,7 +7,8 @@ import { logout } from '../store/slices/authSlice';
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const isAuthenticated = !!token && !!user;
 
   const handleLogout = () => {
     dispatch(logout());
