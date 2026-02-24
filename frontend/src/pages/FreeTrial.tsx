@@ -109,19 +109,19 @@ export const FreeTrialPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Demo trading simulation
+  // Demo trading simulation - HIZLI İŞLEM MOD
   useEffect(() => {
     if (!isRunning) return;
 
-    // İlk işlem 10 saniye sonra
+    // İlk işlem 3 saniye sonra
     const firstTrade = setTimeout(() => {
       executeDemoTrade();
-    }, 10000);
+    }, 3000);
 
-    // Sonraki işlemler 30 saniyede bir
+    // Sonraki işlemler 15 saniyede bir (çok daha sık)
     const tradeInterval = setInterval(() => {
       executeDemoTrade();
-    }, 30000);
+    }, 15000);
 
     return () => {
       clearTimeout(firstTrade);
