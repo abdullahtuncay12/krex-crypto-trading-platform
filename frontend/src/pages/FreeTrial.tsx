@@ -109,19 +109,19 @@ export const FreeTrialPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Demo trading simulation - HIZLI İŞLEM MOD
+  // Demo trading simulation - ÇOK HIZLI İŞLEM MOD (Premium teşvik için)
   useEffect(() => {
     if (!isRunning) return;
 
-    // İlk işlem 3 saniye sonra
+    // İlk işlem 2 saniye sonra
     const firstTrade = setTimeout(() => {
       executeDemoTrade();
-    }, 3000);
+    }, 2000);
 
-    // Sonraki işlemler 15 saniyede bir (çok daha sık)
+    // Sonraki işlemler 8 saniyede bir (çok agresif)
     const tradeInterval = setInterval(() => {
       executeDemoTrade();
-    }, 15000);
+    }, 8000);
 
     return () => {
       clearTimeout(firstTrade);
@@ -131,7 +131,7 @@ export const FreeTrialPage: React.FC = () => {
 
   const executeDemoTrade = () => {
     const tradeAmount = 100 + Math.random() * 200; // $100-300 arası
-    const profitPercent = 0.01 + Math.random() * 0.02; // %1-%3 arası
+    const profitPercent = 0.015 + Math.random() * 0.025; // %1.5-%4 arası (daha yüksek)
     const profit = tradeAmount * profitPercent;
 
     const newTrade: DemoTrade = {
