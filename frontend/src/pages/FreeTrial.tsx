@@ -115,11 +115,11 @@ export const FreeTrialPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Demo trading simulation - ÇOK HIZLI İŞLEM MOD (Premium teşvik için)
+  // Demo trading simulation - Gerçekçi kar oranları
   const executeDemoTrade = useCallback(() => {
     const price = currentPriceRef.current;
     const tradeAmount = 100 + Math.random() * 200; // $100-300 arası
-    const profitPercent = 0.015 + Math.random() * 0.025; // %1.5-%4 arası (daha yüksek)
+    const profitPercent = 0.0005 + Math.random() * 0.0005; // %0.05-%0.1 arası (gerçekçi)
     const profit = tradeAmount * profitPercent;
 
     const newTrade: DemoTrade = {
