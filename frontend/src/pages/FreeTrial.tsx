@@ -1,6 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import { CryptoNewsFeed } from '../components/CryptoNewsFeed';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface DemoTrade {
   id: number;
@@ -9,6 +33,11 @@ interface DemoTrade {
   amount: number;
   profit: number;
   timestamp: Date;
+}
+
+interface PricePoint {
+  time: string;
+  price: number;
 }
 
 export const FreeTrialPage: React.FC = () => {
@@ -22,6 +51,7 @@ export const FreeTrialPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
+  const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
 
   // Gerçek BTC fiyatını çek
   useEffect(() => {
@@ -37,7 +67,36 @@ export const FreeTrialPage: React.FC = () => {
       }
     };
     fetchPrice();
+    
+    // Her 30 saniyede bir gerçek fiyatı güncelle
+    const priceInterval = setInterval(fetchPrice, 30000);
+    return () => clearInterval(priceInterval);
   }, []);
+
+  // Simüle edilmiş fiyat değişimi (gerçek fiyat etrafında küçük dalgalanmalar)
+  useEffect(() => {
+    if (currentPrice === 0 || !isRunning) return;
+
+    const priceInterval = setInterval(() => {
+      setCurrentPrice(prev => {
+        // Gerçek fiyat etrafında %0.05 dalgalanma
+        const change = (Math.random() - 0.5) * (prev * 0.0005);
+        const newPrice = prev + change;
+        
+        // Fiyat geçmişine ekle
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setPriceHistory(prevHistory => {
+          const newHistory = [...prevHistory, { time: timeStr, price: newPrice }];
+          return newHistory.slice(-60); // Son 60 veriyi tut
+        });
+        
+        return newPrice;
+      });
+    }, 1000); // 1 saniyede bir güncelle
+
+    return () => clearInterval(priceInterval);
+  }, [currentPrice, isRunning]);
 
   // Timer
   useEffect(() => {
@@ -95,6 +154,7 @@ export const FreeTrialPage: React.FC = () => {
     setTrades([]);
     setTotalProfit(0);
     setDemoBalance(initialBalance);
+    setPriceHistory([]); // Grafik geçmişini sıfırla
   };
 
   const stopDemo = () => {
@@ -168,6 +228,79 @@ export const FreeTrialPage: React.FC = () => {
 
   const t = texts[language];
 
+  // Chart.js konfigürasyonu
+  const chartData = {
+    labels: priceHistory.map(p => p.time),
+    datasets: [
+      {
+        label: 'BTC/USD',
+        data: priceHistory.map(p => p.price),
+        borderColor: '#F0B90B',
+        backgroundColor: 'rgba(240, 185, 11, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+        backgroundColor: 'rgba(23, 25, 35, 0.9)',
+        titleColor: '#F0B90B',
+        bodyColor: '#fff',
+        borderColor: '#2B3139',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context: any) {
+            return `$${context.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+          }
+        }
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          color: 'rgba(43, 49, 57, 0.3)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#848E9C',
+          maxTicksLimit: 6,
+        },
+      },
+      y: {
+        display: true,
+        grid: {
+          color: 'rgba(43, 49, 57, 0.3)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#848E9C',
+          callback: function(value: any) {
+            return '$' + value.toLocaleString('en-US');
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest' as const,
+      axis: 'x' as const,
+      intersect: false,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-crypto-dark-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,9 +310,9 @@ export const FreeTrialPage: React.FC = () => {
           <p className="text-gray-400">{t.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Demo Area */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Demo Area - 3 columns */}
+          <div className="lg:col-span-3 space-y-6">
             {/* Demo Info Card */}
             <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
               <div className="flex items-start space-x-4">
@@ -275,6 +408,18 @@ export const FreeTrialPage: React.FC = () => {
               )}
             </div>
 
+            {/* Live Price Chart */}
+            {isRunning && priceHistory.length > 0 && (
+              <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
+                <h3 className="text-white font-semibold mb-4">
+                  {language === 'tr' ? 'Canlı Fiyat Grafiği' : 'Live Price Chart'}
+                </h3>
+                <div className="h-64">
+                  <Line data={chartData} options={chartOptions} />
+                </div>
+              </div>
+            )}
+
             {/* Recent Trades */}
             <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
               <h3 className="text-white font-semibold mb-4">{t.recentTrades}</h3>
@@ -313,52 +458,58 @@ export const FreeTrialPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Sidebar - Premium Upgrade */}
+          {/* Sidebar - 1 column */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-crypto-yellow-600 to-crypto-yellow-500 rounded-lg p-6 text-crypto-dark-900 sticky top-8">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-crypto-dark-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-crypto-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+            <div className="sticky top-8 space-y-6">
+              {/* Premium Upgrade Card */}
+              <div className="bg-gradient-to-br from-crypto-yellow-600 to-crypto-yellow-500 rounded-lg p-6 text-crypto-dark-900">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-crypto-dark-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-crypto-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">{t.upgradeToPremium}</h3>
+                  <p className="text-sm opacity-90">{language === 'tr' ? 'Gerçek para ile kazanmaya başlayın' : 'Start earning with real money'}</p>
                 </div>
-                <h3 className="text-2xl font-bold mb-2">{t.upgradeToPremium}</h3>
-                <p className="text-sm opacity-90">{language === 'tr' ? 'Gerçek para ile kazanmaya başlayın' : 'Start earning with real money'}</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start space-x-2">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-medium">{t.benefit1}</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-medium">{t.benefit2}</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-medium">{t.benefit3}</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-medium">{t.benefit4}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => navigate('/register')}
+                  className="w-full bg-crypto-dark-900 hover:bg-crypto-dark-800 text-crypto-yellow-500 font-bold py-3 px-6 rounded-lg transition-colors"
+                >
+                  {language === 'tr' ? 'Hemen Başla →' : 'Get Started →'}
+                </button>
               </div>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start space-x-2">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">{t.benefit1}</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">{t.benefit2}</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">{t.benefit3}</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">{t.benefit4}</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => navigate('/register')}
-                className="w-full bg-crypto-dark-900 hover:bg-crypto-dark-800 text-crypto-yellow-500 font-bold py-3 px-6 rounded-lg transition-colors"
-              >
-                {language === 'tr' ? 'Hemen Başla →' : 'Get Started →'}
-              </button>
+              {/* Crypto News Feed */}
+              <CryptoNewsFeed />
             </div>
           </div>
         </div>
