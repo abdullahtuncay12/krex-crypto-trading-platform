@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { CryptoNewsFeed } from '../components/CryptoNewsFeed';
@@ -52,6 +52,12 @@ export const FreeTrialPage: React.FC = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
+  const currentPriceRef = useRef(currentPrice);
+
+  // currentPrice ref'i güncelle
+  useEffect(() => {
+    currentPriceRef.current = currentPrice;
+  }, [currentPrice]);
 
   // Gerçek BTC fiyatını çek
   useEffect(() => {
@@ -110,6 +116,26 @@ export const FreeTrialPage: React.FC = () => {
   }, [isRunning]);
 
   // Demo trading simulation - ÇOK HIZLI İŞLEM MOD (Premium teşvik için)
+  const executeDemoTrade = useCallback(() => {
+    const price = currentPriceRef.current;
+    const tradeAmount = 100 + Math.random() * 200; // $100-300 arası
+    const profitPercent = 0.015 + Math.random() * 0.025; // %1.5-%4 arası (daha yüksek)
+    const profit = tradeAmount * profitPercent;
+
+    const newTrade: DemoTrade = {
+      id: Date.now(),
+      type: Math.random() > 0.5 ? 'BUY' : 'SELL',
+      price: price,
+      amount: tradeAmount / price,
+      profit: profit,
+      timestamp: new Date(),
+    };
+
+    setTrades(prev => [newTrade, ...prev].slice(0, 10));
+    setTotalProfit(prev => prev + profit);
+    setDemoBalance(prev => prev + profit);
+  }, []);
+
   useEffect(() => {
     if (!isRunning) return;
 
@@ -127,26 +153,7 @@ export const FreeTrialPage: React.FC = () => {
       clearTimeout(firstTrade);
       clearInterval(tradeInterval);
     };
-  }, [isRunning, currentPrice]);
-
-  const executeDemoTrade = () => {
-    const tradeAmount = 100 + Math.random() * 200; // $100-300 arası
-    const profitPercent = 0.015 + Math.random() * 0.025; // %1.5-%4 arası (daha yüksek)
-    const profit = tradeAmount * profitPercent;
-
-    const newTrade: DemoTrade = {
-      id: Date.now(),
-      type: Math.random() > 0.5 ? 'BUY' : 'SELL',
-      price: currentPrice,
-      amount: tradeAmount / currentPrice,
-      profit: profit,
-      timestamp: new Date(),
-    };
-
-    setTrades(prev => [newTrade, ...prev].slice(0, 10));
-    setTotalProfit(prev => prev + profit);
-    setDemoBalance(prev => prev + profit);
-  };
+  }, [isRunning, executeDemoTrade]);
 
   const startDemo = () => {
     setIsRunning(true);
