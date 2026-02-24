@@ -43,32 +43,32 @@ export const LiveUserStats: React.FC = () => {
   return (
     <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-3 shadow-lg">
       {/* Compact Stats */}
-      <div className="flex items-center justify-between space-x-4">
+      <div className="flex items-center justify-between space-x-3">
         {/* Online Users */}
-        <div className="flex items-center space-x-2 flex-1">
-          <span className="flex h-2 w-2">
+        <div className="flex items-center space-x-1.5 flex-1 min-w-0">
+          <span className="flex h-2 w-2 flex-shrink-0">
             <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <div className="flex items-center space-x-1">
-            <span className="text-gray-400 text-xs">{t.online}:</span>
-            <span className="text-buy font-bold text-sm">
+          <div className="flex items-center space-x-1 min-w-0">
+            <span className="text-gray-400 text-xs whitespace-nowrap">{t.online}:</span>
+            <span className="text-buy font-bold text-xs whitespace-nowrap">
               {onlineUsers.toLocaleString('en-US')}
             </span>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-4 w-px bg-crypto-dark-500"></div>
+        <div className="h-4 w-px bg-crypto-dark-500 flex-shrink-0"></div>
 
         {/* Offline Users */}
-        <div className="flex items-center space-x-2 flex-1">
-          <span className="flex h-2 w-2">
+        <div className="flex items-center space-x-1.5 flex-1 min-w-0">
+          <span className="flex h-2 w-2 flex-shrink-0">
             <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
           </span>
-          <div className="flex items-center space-x-1">
-            <span className="text-gray-400 text-xs">{t.offline}:</span>
-            <span className="text-white font-bold text-sm">
+          <div className="flex items-center space-x-1 min-w-0">
+            <span className="text-gray-400 text-xs whitespace-nowrap">{t.offline}:</span>
+            <span className="text-white font-bold text-xs whitespace-nowrap">
               {offlineUsers.toLocaleString('en-US')}
             </span>
           </div>
