@@ -7,6 +7,7 @@ import { PerformanceDisplay } from '../components/PerformanceDisplay';
 import { CryptoNewsFeed } from '../components/CryptoNewsFeed';
 import { PremiumUserActivity } from '../components/PremiumUserActivity';
 import { LiveTradingDemo } from '../components/LiveTradingDemo';
+import { LiveUserStats } from '../components/LiveUserStats';
 import { signalAPI } from '../api/client';
 
 export const HomePage: React.FC = () => {
@@ -178,6 +179,7 @@ export const HomePage: React.FC = () => {
           {/* Sidebar - 1 column on large screens */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
+              <LiveUserStats />
               <CryptoNewsFeed />
               <PremiumUserActivity />
             </div>

@@ -24,3 +24,4 @@ export { InvestmentValueChart } from './InvestmentValueChart';
 export { LiveTradingDemo } from './LiveTradingDemo';
 export { CryptoNewsFeed } from './CryptoNewsFeed';
 export { PremiumUserActivity } from './PremiumUserActivity';
+export { LiveUserStats } from './LiveUserStats';
