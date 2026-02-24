@@ -139,15 +139,15 @@ export const FreeTrialPage: React.FC = () => {
   useEffect(() => {
     if (!isRunning) return;
 
-    // İlk işlem 2 saniye sonra
+    // İlk işlem 5 saniye sonra
     const firstTrade = setTimeout(() => {
       executeDemoTrade();
-    }, 2000);
+    }, 5000);
 
-    // Sonraki işlemler 8 saniyede bir (çok agresif)
+    // Sonraki işlemler 30 saniyede bir (daha gerçekçi)
     const tradeInterval = setInterval(() => {
       executeDemoTrade();
-    }, 8000);
+    }, 30000);
 
     return () => {
       clearTimeout(firstTrade);
