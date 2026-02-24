@@ -23,7 +23,29 @@ export const PremiumUserActivity: React.FC = () => {
   };
 
   const generateRandomActivity = (): UserActivity => {
-    const names = ['Ahmet', 'Mehmet', 'Ayşe', 'Fatma', 'Ali', 'Veli', 'Zeynep', 'Elif', 'Mustafa', 'Emre', 'Deniz', 'Can', 'Ece', 'Selin', 'Burak'];
+    // Global names from different countries
+    const names = [
+      // USA
+      'Michael', 'James', 'Robert', 'Jennifer', 'Sarah', 'David',
+      // UK
+      'Oliver', 'George', 'Harry', 'Emily', 'Sophie', 'Jack',
+      // Russia
+      'Dmitry', 'Alexei', 'Vladimir', 'Natasha', 'Olga', 'Ivan',
+      // China
+      'Wei', 'Chen', 'Li', 'Wang', 'Zhang', 'Liu',
+      // Dubai/UAE
+      'Ahmed', 'Mohammed', 'Fatima', 'Hassan', 'Aisha', 'Omar',
+      // Germany
+      'Hans', 'Klaus', 'Anna', 'Emma', 'Lukas', 'Felix',
+      // France
+      'Pierre', 'Jean', 'Marie', 'Sophie', 'Lucas', 'Emma',
+      // Japan
+      'Takeshi', 'Yuki', 'Hiroshi', 'Sakura', 'Kenji', 'Akira',
+      // Brazil
+      'Carlos', 'Pedro', 'Maria', 'Ana', 'Lucas', 'Gabriel',
+      // India
+      'Raj', 'Amit', 'Priya', 'Sanjay', 'Deepak', 'Anita'
+    ];
     const investments = [5000, 10000, 15000, 20000, 25000, 30000, 50000, 75000, 100000];
     const durations = ['2 gün', '5 gün', '1 hafta', '10 gün', '2 hafta', '3 hafta', '1 ay'];
     const durationsEn = ['2 days', '5 days', '1 week', '10 days', '2 weeks', '3 weeks', '1 month'];
