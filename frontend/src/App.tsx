@@ -11,6 +11,7 @@ import { BotTradingPage } from './pages/BotTradingPage';
 import { InvestmentDashboard } from './pages/InvestmentDashboard';
 import { DepositWithdrawPage } from './pages/DepositWithdrawPage';
 import { SupportPage } from './pages/SupportPage';
+import { FreeTrialPage } from './pages/FreeTrial';
 import { Navbar, PrivateRoute } from './components';
 
 function AppContent() {
@@ -41,6 +42,7 @@ function AppContent() {
             } 
           />
           <Route path="/support" element={<SupportPage />} />
+          <Route path="/free-trial" element={<FreeTrialPage />} />
           <Route 
             path="/bot/create" 
             element={

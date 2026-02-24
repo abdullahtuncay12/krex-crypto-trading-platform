@@ -123,6 +123,12 @@ export const Navbar: React.FC = () => {
                 >
                   {t('nav.support')}
                 </Link>
+                <Link
+                  to="/free-trial"
+                  className="px-3 py-2 text-sm font-medium text-green-400 hover:text-green-300 hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-green-500/30"
+                >
+                  {language === 'tr' ? '🎁 Ücretsiz Deneme' : '🎁 Free Trial'}
+                </Link>
                 <button
                   onClick={toggleLanguage}
                   className="px-2 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-crypto-dark-500"
@@ -251,6 +257,13 @@ export const Navbar: React.FC = () => {
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600"
                 >
                   {t('nav.support')}
+                </Link>
+                <Link
+                  to="/free-trial"
+                  onClick={closeMobileMenu}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-green-400 hover:text-green-300 hover:bg-crypto-dark-600 border border-green-500/30"
+                >
+                  {language === 'tr' ? '🎁 Ücretsiz Deneme' : '🎁 Free Trial'}
                 </Link>
                 <button
                   onClick={toggleLanguage}
