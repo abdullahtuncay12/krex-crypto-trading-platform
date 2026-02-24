@@ -23,3 +23,4 @@ export { InvestmentCard } from './InvestmentCard';
 export { InvestmentValueChart } from './InvestmentValueChart';
 export { LiveTradingDemo } from './LiveTradingDemo';
 export { CryptoNewsFeed } from './CryptoNewsFeed';
+export { PremiumUserActivity } from './PremiumUserActivity';
