@@ -118,88 +118,113 @@ export const LiveTradingDemo: React.FC = () => {
   useEffect(() => {
     if (currentPrice === 0) return;
 
+    let tradeCounter = 0;
+
     // İlk işlemi 5 saniye sonra yap
     const initialTimeout = setTimeout(() => {
-      if (currentPrice > 0) {
-        // İlk ALIŞ işlemi
-        setBotStatus('buying');
-        setTimeout(() => {
-          const investAmount = 2000 + Math.random() * 3000;
-          const btcAmount = investAmount / currentPrice;
-          
-          const newTrade: Trade = {
-            id: Date.now(),
-            type: 'BUY',
-            price: currentPrice,
-            amount: btcAmount,
-            timestamp: new Date(),
-          };
-          
-          setOpenPosition(newTrade);
-          setTrades(prev => [newTrade, ...prev].slice(0, 5));
-          setTradeCount(prev => prev + 1);
-          setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'BUY' }]);
-          setBotStatus('waiting');
-        }, 500);
-      }
+      setCurrentPrice(prevPrice => {
+        if (prevPrice > 0) {
+          // İlk ALIŞ işlemi
+          setBotStatus('buying');
+          setTimeout(() => {
+            const investAmount = 2000 + Math.random() * 3000;
+            const btcAmount = investAmount / prevPrice;
+            
+            const newTrade: Trade = {
+              id: Date.now(),
+              type: 'BUY',
+              price: prevPrice,
+              amount: btcAmount,
+              timestamp: new Date(),
+            };
+            
+            setOpenPosition(newTrade);
+            setTrades(prev => [newTrade, ...prev].slice(0, 5));
+            setTradeCount(prev => prev + 1);
+            setPriceHistory(prev => {
+              setTradeMarkers(markers => [...markers, { x: prev.length - 1, y: prevPrice, type: 'BUY' }]);
+              return prev;
+            });
+            setBotStatus('waiting');
+          }, 500);
+        }
+        return prevPrice;
+      });
     }, 5000);
 
     // Her 60 saniyede bir işlem yap (1 dakika)
     const tradeInterval = setInterval(() => {
-      if (!openPosition) {
-        // Pozisyon yoksa AL
-        setBotStatus('buying');
-        setTimeout(() => {
-          const investAmount = 2000 + Math.random() * 3000;
-          const btcAmount = investAmount / currentPrice;
+      tradeCounter++;
+      
+      setOpenPosition(prevPosition => {
+        setCurrentPrice(prevPrice => {
+          if (prevPrice === 0) return prevPrice;
+
+          if (!prevPosition) {
+            // Pozisyon yoksa AL
+            setBotStatus('buying');
+            setTimeout(() => {
+              const investAmount = 2000 + Math.random() * 3000;
+              const btcAmount = investAmount / prevPrice;
+              
+              const newTrade: Trade = {
+                id: Date.now(),
+                type: 'BUY',
+                price: prevPrice,
+                amount: btcAmount,
+                timestamp: new Date(),
+              };
+              
+              setOpenPosition(newTrade);
+              setTrades(prev => [newTrade, ...prev].slice(0, 5));
+              setTradeCount(prev => prev + 1);
+              setPriceHistory(prev => {
+                setTradeMarkers(markers => [...markers, { x: prev.length - 1, y: prevPrice, type: 'BUY' }]);
+                return prev;
+              });
+              setBotStatus('waiting');
+            }, 500);
+          } else {
+            // Pozisyon varsa SAT
+            setBotStatus('selling');
+            setTimeout(() => {
+              const potentialProfit = (prevPrice - prevPosition.price) * prevPosition.amount;
+              // Minimum $10 kar garantisi
+              const profit = Math.max(potentialProfit, 10 + Math.random() * 20);
+              
+              const newTrade: Trade = {
+                id: Date.now(),
+                type: 'SELL',
+                price: prevPrice,
+                amount: prevPosition.amount,
+                profit: profit,
+                timestamp: new Date(),
+              };
+              
+              setTrades(prev => [newTrade, ...prev].slice(0, 5));
+              setTotalProfit(prev => prev + profit);
+              setCurrentValue(prev => prev + profit);
+              setTradeCount(prev => prev + 1);
+              setOpenPosition(null);
+              setPriceHistory(prev => {
+                setTradeMarkers(markers => [...markers, { x: prev.length - 1, y: prevPrice, type: 'SELL' }]);
+                return prev;
+              });
+              setBotStatus('waiting');
+            }, 500);
+          }
           
-          const newTrade: Trade = {
-            id: Date.now(),
-            type: 'BUY',
-            price: currentPrice,
-            amount: btcAmount,
-            timestamp: new Date(),
-          };
-          
-          setOpenPosition(newTrade);
-          setTrades(prev => [newTrade, ...prev].slice(0, 5));
-          setTradeCount(prev => prev + 1);
-          setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'BUY' }]);
-          setBotStatus('waiting');
-        }, 500);
-      } else {
-        // Pozisyon varsa SAT
-        setBotStatus('selling');
-        setTimeout(() => {
-          const potentialProfit = (currentPrice - openPosition.price) * openPosition.amount;
-          // Minimum $10 kar garantisi
-          const profit = Math.max(potentialProfit, 10 + Math.random() * 20);
-          
-          const newTrade: Trade = {
-            id: Date.now(),
-            type: 'SELL',
-            price: currentPrice,
-            amount: openPosition.amount,
-            profit: profit,
-            timestamp: new Date(),
-          };
-          
-          setTrades(prev => [newTrade, ...prev].slice(0, 5));
-          setTotalProfit(prev => prev + profit);
-          setCurrentValue(prev => prev + profit);
-          setTradeCount(prev => prev + 1);
-          setOpenPosition(null);
-          setTradeMarkers(prev => [...prev, { x: priceHistory.length - 1, y: currentPrice, type: 'SELL' }]);
-          setBotStatus('waiting');
-        }, 500);
-      }
+          return prevPrice;
+        });
+        return prevPosition;
+      });
     }, 60000); // 60 saniye = 1 dakika
 
     return () => {
       clearTimeout(initialTimeout);
       clearInterval(tradeInterval);
     };
-  }, [currentPrice, openPosition, priceHistory.length]);
+  }, [currentPrice === 0]);
 
   const texts = {
     tr: {
