@@ -4,7 +4,7 @@ import { CryptoSelector, Cryptocurrency } from '../components/CryptoSelector';
 import { SignalDisplay, TradingSignal } from '../components/SignalDisplay';
 import { HistoricalChart } from '../components/HistoricalChart';
 import { PerformanceDisplay } from '../components/PerformanceDisplay';
-import { AlertList } from '../components/AlertList';
+import { CryptoNewsFeed } from '../components/CryptoNewsFeed';
 import { LiveTradingDemo } from '../components/LiveTradingDemo';
 import { signalAPI } from '../api/client';
 
@@ -177,7 +177,7 @@ export const HomePage: React.FC = () => {
           {/* Sidebar - 1 column on large screens */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
-              <AlertList userRole={userRole} />
+              <CryptoNewsFeed />
             </div>
           </div>
         </div>
