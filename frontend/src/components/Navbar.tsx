@@ -32,11 +32,12 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0" onClick={closeMobileMenu}>
-            <svg className="w-8 h-8 text-crypto-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-            </svg>
-            <span className="text-xl font-bold text-white whitespace-nowrap">Crypto Signals</span>
+          <Link to="/" className="flex items-center space-x-3 flex-shrink-0" onClick={closeMobileMenu}>
+            <img src="/logo.png" alt="MoonLlama" className="w-10 h-10 rounded-full" />
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-white whitespace-nowrap">MoonLlama</span>
+              <span className="text-xs text-crypto-yellow-500 whitespace-nowrap">No Panic. Just Signals.</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
