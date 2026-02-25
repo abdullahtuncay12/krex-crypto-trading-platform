@@ -99,27 +99,47 @@ Railway otomatik olarak `REDIS_URL` environment variable'ı oluşturur.
 
 ### ADIM 4: Environment Variables Ayarla (5 dakika)
 
+**ÖNEMLİ**: Backend servisi çalışması için mutlaka bu adımları tamamlayın!
+
+#### 4.1. PostgreSQL DATABASE_URL'i Kopyalayın
 ```
-1. Backend service'i seçin
-2. "Variables" tab'ına gidin
-3. Aşağıdaki değişkenleri ekleyin:
+1. Railway dashboard'da "PostgreSQL" servisine tıklayın
+2. "Connect" sekmesine gidin
+3. "DATABASE_URL" değerini kopyalayın
+   Örnek: postgresql://postgres:xxxxx@containers-us-west-xxx.railway.app:5432/railway
 ```
 
-**Gerekli Environment Variables:**
+#### 4.2. Redis URL'i Kopyalayın
+```
+1. Railway dashboard'da "Redis" servisine tıklayın
+2. "Connect" sekmesine gidin
+3. "REDIS_URL" değerini kopyalayın
+   Örnek: redis://default:xxxxx@containers-us-west-xxx.railway.internal:6379
+```
+
+#### 4.3. Backend Environment Variables Ekleyin
+```
+1. "backend" service'i seçin
+2. "Variables" tab'ına gidin
+3. "New Variable" butonuna tıklayın
+4. Aşağıdaki değişkenleri TEK TEK ekleyin:
+```
+
+**Gerekli Environment Variables (HEPSİNİ EKLEYİN):**
 
 ```bash
 # Node Environment
 NODE_ENV=production
 PORT=3001
 
-# Database (Otomatik oluşturuldu)
-DATABASE_URL=${{Postgres.DATABASE_URL}}
+# Database (Yukarıda kopyaladığınız değeri yapıştırın)
+DATABASE_URL=postgresql://postgres:xxxxx@containers-us-west-xxx.railway.app:5432/railway
 
-# Redis (Otomatik oluşturuldu)
-REDIS_URL=${{Redis.REDIS_URL}}
+# Redis (Yukarıda kopyaladığınız değeri yapıştırın)
+REDIS_URL=redis://default:xxxxx@containers-us-west-xxx.railway.internal:6379
 
-# JWT Secret (Güçlü bir key oluşturun)
-JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters_long_please_change_this_to_something_secure
+# JWT Secret (Bu değeri olduğu gibi kullanabilirsiniz)
+JWT_SECRET=krex-super-secret-jwt-key-2024-production-change-this-later-12345
 
 # Exchange API Keys (Şimdilik mock data kullanıyoruz, opsiyonel)
 BINANCE_API_KEY=optional_for_now

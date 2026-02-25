@@ -19,6 +19,13 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Route GET / not found",
+    "timestamp": "2026-02-22T22:11:01.390Z",
+    "requestId": "req_1771798261390_i8htysa0b"
+  }
+}
 
 // Import routes
 import authRoutes from './routes/auth';
