@@ -115,12 +115,24 @@ export const FreeTrialPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Demo trading simulation - Gerçekçi kar oranları
+  // Demo trading simulation - Gerçekçi kar oranları ve arada zararlar
   const executeDemoTrade = useCallback(() => {
     const price = currentPriceRef.current;
     const tradeAmount = 100 + Math.random() * 200; // $100-300 arası
-    const profitPercent = 0.0005 + Math.random() * 0.0005; // %0.05-%0.1 arası (gerçekçi)
-    const profit = tradeAmount * profitPercent;
+    
+    // %20 ihtimalle zarar (stop-loss devreye girer)
+    const isLoss = Math.random() < 0.2;
+    
+    let profit: number;
+    if (isLoss) {
+      // Stop-loss: -%0.05 ile -%0.15 arası küçük zarar
+      const lossPercent = -(0.0005 + Math.random() * 0.001);
+      profit = tradeAmount * lossPercent;
+    } else {
+      // Normal kar: %0.05-%0.1 arası (gerçekçi)
+      const profitPercent = 0.0005 + Math.random() * 0.0005;
+      profit = tradeAmount * profitPercent;
+    }
 
     const newTrade: DemoTrade = {
       id: Date.now(),
@@ -455,7 +467,12 @@ export const FreeTrialPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-buy font-semibold text-sm">+${trade.profit.toFixed(2)}</p>
+                        <p className={`font-semibold text-sm ${trade.profit >= 0 ? 'text-buy' : 'text-sell'}`}>
+                          {trade.profit >= 0 ? '+' : ''}${trade.profit.toFixed(2)}
+                        </p>
+                        {trade.profit < 0 && (
+                          <p className="text-xs text-yellow-500">🛡️ Stop-Loss</p>
+                        )}
                         <p className="text-gray-500 text-xs">{trade.timestamp.toLocaleTimeString()}</p>
                       </div>
                     </div>

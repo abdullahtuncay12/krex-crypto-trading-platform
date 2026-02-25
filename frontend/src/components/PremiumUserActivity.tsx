@@ -51,8 +51,22 @@ export const PremiumUserActivity: React.FC = () => {
     const durationsEn = ['2 days', '5 days', '1 week', '10 days', '2 weeks', '3 weeks', '1 month'];
     
     const investment = investments[Math.floor(Math.random() * investments.length)];
-    const profitPercent = 3 + Math.random() * 12; // %3-%15 kar
-    const profit = investment * (profitPercent / 100);
+    
+    // %15 ihtimalle zarar (stop-loss devreye girer)
+    const isLoss = Math.random() < 0.15;
+    
+    let profitPercent: number;
+    let profit: number;
+    
+    if (isLoss) {
+      // Zarar durumunda: -%1 ile -%3 arası (stop-loss max %5'i korur)
+      profitPercent = -(1 + Math.random() * 2);
+      profit = investment * (profitPercent / 100);
+    } else {
+      // Kar durumunda: %3-%15 kar
+      profitPercent = 3 + Math.random() * 12;
+      profit = investment * (profitPercent / 100);
+    }
     
     // Son 30 gün içinde rastgele tarih
     const daysAgo = Math.floor(Math.random() * 30);
@@ -158,17 +172,19 @@ export const PremiumUserActivity: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-gray-500">{t.profit}</p>
-                  <p className="text-buy font-semibold">
-                    +${activity.profit.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  <p className={`font-semibold ${activity.profit >= 0 ? 'text-buy' : 'text-sell'}`}>
+                    {activity.profit >= 0 ? '+' : ''}${Math.abs(activity.profit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
                 </div>
               </div>
 
               <div className="mt-2 pt-2 border-t border-crypto-dark-500">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">Kar Oranı</span>
-                  <span className="text-xs font-bold text-buy">
-                    +{activity.profitPercent.toFixed(2)}%
+                  <span className="text-xs text-gray-400">
+                    {activity.profit >= 0 ? (language === 'tr' ? 'Kar Oranı' : 'Profit Rate') : (language === 'tr' ? '🛡️ Stop-Loss Aktif' : '🛡️ Stop-Loss Active')}
+                  </span>
+                  <span className={`text-xs font-bold ${activity.profit >= 0 ? 'text-buy' : 'text-sell'}`}>
+                    {activity.profit >= 0 ? '+' : ''}{activity.profitPercent.toFixed(2)}%
                   </span>
                 </div>
               </div>

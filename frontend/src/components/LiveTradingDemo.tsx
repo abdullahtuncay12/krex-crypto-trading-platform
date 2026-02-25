@@ -188,9 +188,19 @@ export const LiveTradingDemo: React.FC = () => {
             // Pozisyon varsa SAT
             setBotStatus('selling');
             setTimeout(() => {
-              const potentialProfit = (prevPrice - prevPosition.price) * prevPosition.amount;
-              // Minimum $10 kar garantisi
-              const profit = Math.max(potentialProfit, 10 + Math.random() * 20);
+              // %20 ihtimalle zarar (stop-loss devreye girer)
+              const isLoss = Math.random() < 0.2;
+              
+              let profit: number;
+              if (isLoss) {
+                // Stop-loss: -%1 ile -%3 arası küçük zarar
+                const lossPercent = -(1 + Math.random() * 2) / 100;
+                profit = prevPosition.price * prevPosition.amount * lossPercent;
+              } else {
+                // Normal kar: Minimum $10-30 kar
+                const potentialProfit = (prevPrice - prevPosition.price) * prevPosition.amount;
+                profit = Math.max(potentialProfit, 10 + Math.random() * 20);
+              }
               
               const newTrade: Trade = {
                 id: Date.now(),
@@ -492,14 +502,21 @@ export const LiveTradingDemo: React.FC = () => {
                 </div>
                 <div className="text-right">
                   {trade.profit !== undefined && (
-                    <p
-                      className={`text-sm font-semibold ${
-                        trade.profit >= 0 ? 'text-buy' : 'text-sell'
-                      }`}
-                    >
-                      {trade.profit >= 0 ? '+' : ''}
-                      ${trade.profit.toFixed(2)}
-                    </p>
+                    <>
+                      <p
+                        className={`text-sm font-semibold ${
+                          trade.profit >= 0 ? 'text-buy' : 'text-sell'
+                        }`}
+                      >
+                        {trade.profit >= 0 ? '+' : ''}
+                        ${trade.profit.toFixed(2)}
+                      </p>
+                      {trade.profit < 0 && (
+                        <p className="text-xs text-yellow-500 mt-1">
+                          🛡️ {language === 'tr' ? 'Stop-Loss' : 'Stop-Loss'}
+                        </p>
+                      )}
+                    </>
                   )}
                   <p className="text-gray-500 text-xs">
                     {trade.timestamp.toLocaleTimeString()}
