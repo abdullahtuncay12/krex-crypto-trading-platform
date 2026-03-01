@@ -55,9 +55,9 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-crypto-dark-900 transition-colors duration-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-transparent transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white dark:bg-crypto-dark-800 shadow-sm border-b border-gray-200 dark:border-crypto-dark-500">
+      <header className="bg-white dark:bg-crypto-dark-800/80 dark:backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-crypto-dark-500/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -93,7 +93,7 @@ export const HomePage: React.FC = () => {
           {/* Main Content Area - 3 columns on large screens */}
           <div className="lg:col-span-3 space-y-6">
             {/* Cryptocurrency Selector */}
-            <div className="bg-white dark:bg-crypto-dark-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500">
+            <div className="bg-white dark:bg-crypto-dark-800/80 dark:backdrop-blur-md rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500/50">
               <CryptoSelector onSelect={handleCryptoSelect} />
             </div>
 
@@ -101,7 +101,7 @@ export const HomePage: React.FC = () => {
             {selectedCrypto && (
               <>
                 {loadingSignal ? (
-                  <div className="bg-white dark:bg-crypto-dark-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500">
+                  <div className="bg-white dark:bg-crypto-dark-800/80 dark:backdrop-blur-md rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500/50">
                     <div className="flex items-center justify-center py-12">
                       <svg className="animate-spin h-12 w-12 text-blue-600 dark:text-crypto-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -110,7 +110,7 @@ export const HomePage: React.FC = () => {
                     </div>
                   </div>
                 ) : signalError ? (
-                  <div className="bg-white dark:bg-crypto-dark-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500">
+                  <div className="bg-white dark:bg-crypto-dark-800/80 dark:backdrop-blur-md rounded-lg shadow-md p-6 border border-gray-200 dark:border-crypto-dark-500/50">
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
                       <p className="text-red-600 dark:text-red-400">{signalError}</p>
                     </div>
@@ -132,7 +132,7 @@ export const HomePage: React.FC = () => {
 
             {/* Welcome Message when no crypto selected */}
             {!selectedCrypto && (
-              <div className="bg-white dark:bg-crypto-dark-800 rounded-lg shadow-md p-12 text-center border border-gray-200 dark:border-crypto-dark-500">
+              <div className="bg-white dark:bg-crypto-dark-800/80 dark:backdrop-blur-md rounded-lg shadow-md p-12 text-center border border-gray-200 dark:border-crypto-dark-500/50">
                 <svg className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>

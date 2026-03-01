@@ -27,6 +27,24 @@ export default {
       fontFamily: {
         'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
+      backgroundImage: {
+        'space-gradient': 'radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1e 50%, #050510 100%)',
+        'space-gradient-alt': 'radial-gradient(ellipse at bottom, #16213e 0%, #0f1419 50%, #0a0e14 100%)',
+      },
+      animation: {
+        'twinkle': 'twinkle 3s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        twinkle: {
+          '0%, 100%': { opacity: '0.3' },
+          '50%': { opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
     },
   },
   plugins: [],
