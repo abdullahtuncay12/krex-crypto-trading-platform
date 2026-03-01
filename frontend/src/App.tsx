@@ -4,6 +4,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store, RootState } from './store';
 import { fetchCurrentUser } from './store/slices/authSlice';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { HomePage } from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -27,7 +28,7 @@ function AppContent() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-crypto-dark-900">
+      <div className="min-h-screen bg-white dark:bg-crypto-dark-900 transition-colors duration-200">
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -69,9 +70,11 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </ThemeProvider>
     </Provider>
   );
 }
