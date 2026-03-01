@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MetaMaskConnectButton } from '../components/MetaMaskConnectButton';
 
 type PaymentMethod = 'crypto' | 'card' | 'paypal' | 'binance';
 
@@ -214,11 +213,6 @@ export const DepositWithdrawPage: React.FC = () => {
               <p className="text-2xl font-bold text-white">
                 ${user?.balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
               </p>
-            </div>
-
-            {/* MetaMask Connection */}
-            <div className="mb-6">
-              <MetaMaskConnectButton />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
