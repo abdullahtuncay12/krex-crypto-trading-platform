@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useLanguage } from '../contexts/LanguageContext';
+import { PageTransition } from '../components';
 
 type PaymentMethod = 'crypto' | 'card' | 'paypal' | 'binance';
 
@@ -11,6 +12,25 @@ export const DepositWithdrawPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('crypto');
+  const [showTransition, setShowTransition] = useState(false);
+
+  // Show transition animation on component mount
+  useEffect(() => {
+    // Check if we should show the transition (not shown in this session for this page)
+    const hasShownTransition = sessionStorage.getItem('depositPageTransitionShown');
+    
+    if (!hasShownTransition) {
+      setShowTransition(true);
+      sessionStorage.setItem('depositPageTransitionShown', 'true');
+      
+      // Hide transition after animation completes
+      const timer = setTimeout(() => {
+        setShowTransition(false);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
   
   // Payment method specific fields
   const [walletAddress, setWalletAddress] = useState('');
@@ -176,8 +196,10 @@ export const DepositWithdrawPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-crypto-dark-900 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <>
+      <PageTransition show={showTransition} variant="money" />
+      <div className="min-h-screen bg-crypto-dark-900 py-8">
+        <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-white mb-8">{text.title}</h1>
 
         <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 overflow-hidden">
@@ -358,6 +380,7 @@ export const DepositWithdrawPage: React.FC = () => {
           </ul>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
