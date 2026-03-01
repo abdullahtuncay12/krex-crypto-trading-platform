@@ -90,19 +90,10 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ show, variant = 
           {/* Logo */}
           <div className="relative">
             <img
-              src="/logo.png"
+              src="/money-llama-logo.png"
               alt="MoonLlama"
               className="w-32 h-32 md:w-48 md:h-48 rounded-full shadow-2xl"
             />
-            
-            {/* Dollar sign eyes overlay for money variant */}
-            {variant === 'money' && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-6xl md:text-8xl font-bold text-crypto-yellow-500 animate-pulse" style={{ textShadow: '0 0 20px rgba(240, 185, 11, 0.8)' }}>
-                  💵
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Money rain effect */}
