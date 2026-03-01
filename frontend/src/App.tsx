@@ -5,6 +5,7 @@ import { store, RootState } from './store';
 import { fetchCurrentUser } from './store/slices/authSlice';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { SplashScreen } from './components/SplashScreen';
 import { HomePage } from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -28,6 +29,7 @@ function AppContent() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <SplashScreen />
       <div className="min-h-screen bg-white dark:bg-space-gradient transition-colors duration-200 relative">
         {/* Space theme stars - only visible in dark mode */}
         <div className="dark:block hidden fixed inset-0 overflow-hidden pointer-events-none">
