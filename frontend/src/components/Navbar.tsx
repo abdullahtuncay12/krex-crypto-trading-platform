@@ -35,10 +35,10 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
           <Link to="/" className="flex items-center space-x-3 flex-shrink-0" onClick={closeMobileMenu}>
-            <img src="/logo.png" alt="MoonLlama" className="w-10 h-10 rounded-full" />
+            <img src="/logo.png" alt="MoonLlama" className="w-10 h-10 rounded-full shadow-glow" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">MoonLlama</span>
-              <span className="text-xs text-crypto-yellow-500 whitespace-nowrap">No Panic. Just Signals.</span>
+              <span className="text-xl font-bold font-display text-gray-900 dark:text-white whitespace-nowrap tracking-tight">MoonLlama</span>
+              <span className="text-xs text-accent-500 dark:text-crypto-yellow-500 whitespace-nowrap font-medium">No Panic. Just Signals.</span>
             </div>
           </Link>
 

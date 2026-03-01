@@ -92,7 +92,7 @@ export const SplashScreen: React.FC = () => {
         {/* Brand name with typing effect */}
         <div className="mt-8 text-center">
           <h1
-            className={`text-4xl md:text-6xl font-bold text-white mb-2 transition-all duration-1000 ${
+            className={`text-4xl md:text-6xl font-bold font-display text-white mb-2 transition-all duration-1000 tracking-tight ${
               isAnimating
                 ? 'translate-y-0 opacity-100'
                 : 'translate-y-4 opacity-0'
@@ -104,7 +104,7 @@ export const SplashScreen: React.FC = () => {
             MoonLlama
           </h1>
           <p
-            className={`text-xl md:text-2xl text-crypto-yellow-500 font-semibold transition-all duration-1000 ${
+            className={`text-xl md:text-2xl text-crypto-yellow-500 font-semibold font-display transition-all duration-1000 tracking-wide ${
               isAnimating
                 ? 'translate-y-0 opacity-100'
                 : 'translate-y-4 opacity-0'
