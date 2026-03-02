@@ -78,7 +78,7 @@ export const LanguageSelector: React.FC = () => {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-48 bg-white dark:bg-crypto-dark-700 rounded-md shadow-lg border border-gray-200 dark:border-crypto-dark-500 z-50"
+          className="absolute right-0 mt-2 w-48 bg-white dark:bg-crypto-dark-700 rounded-md shadow-lg border border-gray-200 dark:border-crypto-dark-500 z-[9999]"
           role="menu"
           aria-orientation="vertical"
         >
