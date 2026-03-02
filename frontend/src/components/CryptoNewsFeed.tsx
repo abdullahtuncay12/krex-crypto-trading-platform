@@ -14,7 +14,7 @@ export const CryptoNewsFeed: React.FC = () => {
   const { language } = useLanguage();
   const [news, setNews] = useState<NewsItem[]>([]);
 
-  const newsTemplates = {
+  const newsTemplates: Record<string, Array<{ title: string; description: string; type: 'news' | 'data' | 'analysis'; icon: string }>> = {
     tr: [
       { title: 'BTC Hacim Artışı', description: '24 saatlik işlem hacmi %12 arttı', type: 'data' as const, icon: '📊' },
       { title: 'Piyasa Analizi', description: 'Teknik göstergeler yükseliş sinyali veriyor', type: 'analysis' as const, icon: '📈' },
@@ -51,9 +51,12 @@ export const CryptoNewsFeed: React.FC = () => {
     ],
   };
 
+  // Fallback to English for unsupported languages
+  const currentNewsTemplates = newsTemplates[language] || newsTemplates.en;
+
   useEffect(() => {
     // İlk haberleri ekle
-    const initialNews = newsTemplates[language].slice(0, 3).map((item, index) => ({
+    const initialNews = currentNewsTemplates.slice(0, 3).map((item, index) => ({
       ...item,
       id: Date.now() + index,
       time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
@@ -62,7 +65,7 @@ export const CryptoNewsFeed: React.FC = () => {
 
     // Her 15 saniyede bir yeni haber ekle
     const newsInterval = setInterval(() => {
-      const templates = newsTemplates[language];
+      const templates = currentNewsTemplates;
       const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
       
       const newItem: NewsItem = {
@@ -77,7 +80,7 @@ export const CryptoNewsFeed: React.FC = () => {
     return () => clearInterval(newsInterval);
   }, [language]);
 
-  const texts = {
+  const texts: Record<string, { title: string; subtitle: string; noNews: string }> = {
     tr: {
       title: 'Piyasa Akışı',
       subtitle: 'Anlık haberler ve veriler',
@@ -88,9 +91,24 @@ export const CryptoNewsFeed: React.FC = () => {
       subtitle: 'Live news and data',
       noNews: 'Loading news...',
     },
+    ru: {
+      title: 'Рыночная Лента',
+      subtitle: 'Новости и данные в реальном времени',
+      noNews: 'Загрузка новостей...',
+    },
+    ja: {
+      title: 'マーケットフィード',
+      subtitle: 'リアルタイムニュースとデータ',
+      noNews: 'ニュースを読み込んでいます...',
+    },
+    de: {
+      title: 'Markt-Feed',
+      subtitle: 'Live-Nachrichten und Daten',
+      noNews: 'Nachrichten werden geladen...',
+    },
   };
 
-  const t = texts[language];
+  const t = texts[language] || texts.en;
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -102,11 +120,15 @@ export const CryptoNewsFeed: React.FC = () => {
   };
 
   const getTypeLabel = (type: string) => {
-    const labels = {
+    const labels: Record<string, { news: string; data: string; analysis: string }> = {
       tr: { news: 'Haber', data: 'Veri', analysis: 'Analiz' },
       en: { news: 'News', data: 'Data', analysis: 'Analysis' },
+      ru: { news: 'Новости', data: 'Данные', analysis: 'Анализ' },
+      ja: { news: 'ニュース', data: 'データ', analysis: '分析' },
+      de: { news: 'Nachrichten', data: 'Daten', analysis: 'Analyse' },
     };
-    return labels[language][type as keyof typeof labels.tr];
+    const currentLabels = labels[language] || labels.en;
+    return currentLabels[type as keyof typeof currentLabels];
   };
 
   return (

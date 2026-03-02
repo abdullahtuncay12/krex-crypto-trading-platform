@@ -27,7 +27,7 @@ export const LiveUserStats: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const texts = {
+  const texts: Record<string, { online: string; offline: string }> = {
     tr: {
       online: 'Çevrimiçi',
       offline: 'Çevrimdışı',
@@ -36,9 +36,21 @@ export const LiveUserStats: React.FC = () => {
       online: 'Online',
       offline: 'Offline',
     },
+    ru: {
+      online: 'Онлайн',
+      offline: 'Оффлайн',
+    },
+    ja: {
+      online: 'オンライン',
+      offline: 'オフライン',
+    },
+    de: {
+      online: 'Online',
+      offline: 'Offline',
+    },
   };
 
-  const t = texts[language];
+  const t = texts[language] || texts.en;
 
   return (
     <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-3 shadow-lg">

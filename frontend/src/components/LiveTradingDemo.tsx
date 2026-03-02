@@ -236,7 +236,29 @@ export const LiveTradingDemo: React.FC = () => {
     };
   }, [currentPrice === 0]);
 
-  const texts = {
+  const texts: Record<string, {
+    title: string;
+    subtitle: string;
+    currentPrice: string;
+    botStatus: string;
+    totalProfit: string;
+    tradeCount: string;
+    initialInvestment: string;
+    currentValue: string;
+    runningTime: string;
+    profitPercentage: string;
+    recentTrades: string;
+    type: string;
+    price: string;
+    amount: string;
+    profit: string;
+    time: string;
+    analyzing: string;
+    buying: string;
+    selling: string;
+    waiting: string;
+    demoNote: string;
+  }> = {
     tr: {
       title: 'Canlı Trading',
       subtitle: 'Botun gerçek zamanlı işlemlerini izleyin',
@@ -283,9 +305,78 @@ export const LiveTradingDemo: React.FC = () => {
       waiting: '⏳ Waiting for Signal...',
       demoNote: '* This is a demo simulation. Real BTC price is used but trades are simulated.',
     },
+    ru: {
+      title: 'Живая Торговля',
+      subtitle: 'Наблюдайте за торговлей бота в реальном времени',
+      currentPrice: 'Текущая Цена',
+      botStatus: 'Статус Бота',
+      totalProfit: 'Общая Прибыль',
+      tradeCount: 'Количество Сделок',
+      initialInvestment: 'Начальная Инвестиция',
+      currentValue: 'Текущая Стоимость',
+      runningTime: 'Время Работы',
+      profitPercentage: 'Процент Прибыли',
+      recentTrades: 'Последние Сделки',
+      type: 'Тип',
+      price: 'Цена',
+      amount: 'Количество',
+      profit: 'Прибыль/Убыток',
+      time: 'Время',
+      analyzing: '📊 Анализ Рынка...',
+      buying: '🟢 Размещение Ордера на Покупку...',
+      selling: '🔴 Размещение Ордера на Продажу...',
+      waiting: '⏳ Ожидание Сигнала...',
+      demoNote: '* Это демонстрационная симуляция. Используется реальная цена BTC, но сделки симулированы.',
+    },
+    ja: {
+      title: 'ライブトレーディング',
+      subtitle: 'ボットのリアルタイム取引を見る',
+      currentPrice: '現在価格',
+      botStatus: 'ボットステータス',
+      totalProfit: '総利益',
+      tradeCount: '取引数',
+      initialInvestment: '初期投資',
+      currentValue: '現在価値',
+      runningTime: '稼働時間',
+      profitPercentage: '利益率',
+      recentTrades: '最近の取引',
+      type: 'タイプ',
+      price: '価格',
+      amount: '数量',
+      profit: '損益',
+      time: '時間',
+      analyzing: '📊 市場分析中...',
+      buying: '🟢 買い注文中...',
+      selling: '🔴 売り注文中...',
+      waiting: '⏳ シグナル待機中...',
+      demoNote: '* これはデモシミュレーションです。実際のBTC価格を使用していますが、取引はシミュレートされています。',
+    },
+    de: {
+      title: 'Live-Trading',
+      subtitle: 'Beobachten Sie den Bot beim Handeln in Echtzeit',
+      currentPrice: 'Aktueller Preis',
+      botStatus: 'Bot-Status',
+      totalProfit: 'Gesamtgewinn',
+      tradeCount: 'Anzahl der Trades',
+      initialInvestment: 'Anfangsinvestition',
+      currentValue: 'Aktueller Wert',
+      runningTime: 'Laufzeit',
+      profitPercentage: 'Gewinn %',
+      recentTrades: 'Letzte Trades',
+      type: 'Typ',
+      price: 'Preis',
+      amount: 'Menge',
+      profit: 'Gewinn/Verlust',
+      time: 'Zeit',
+      analyzing: '📊 Marktanalyse...',
+      buying: '🟢 Kauforder wird platziert...',
+      selling: '🔴 Verkaufsorder wird platziert...',
+      waiting: '⏳ Warten auf Signal...',
+      demoNote: '* Dies ist eine Demo-Simulation. Der echte BTC-Preis wird verwendet, aber die Trades sind simuliert.',
+    },
   };
 
-  const t = texts[language];
+  const t = texts[language] || texts.en;
 
   const getStatusText = () => {
     switch (botStatus) {
@@ -433,7 +524,7 @@ export const LiveTradingDemo: React.FC = () => {
 
       {/* Live Price Chart */}
       <div className="bg-crypto-dark-700 rounded-lg p-4 border border-crypto-dark-500 mb-6 relative">
-        <h3 className="text-white font-semibold mb-4">{language === 'tr' ? 'Canlı Fiyat Grafiği' : 'Live Price Chart'}</h3>
+        <h3 className="text-white font-semibold mb-4">{t.title === 'Canlı Trading' ? 'Canlı Fiyat Grafiği' : t.title === 'Живая Торговля' ? 'График Цены в Реальном Времени' : t.title === 'ライブトレーディング' ? 'ライブ価格チャート' : t.title === 'Live-Trading' ? 'Live-Preisdiagramm' : 'Live Price Chart'}</h3>
         <div className="h-64 relative">
           {priceHistory.length > 0 ? (
             <>
@@ -460,7 +551,7 @@ export const LiveTradingDemo: React.FC = () => {
             </>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500">{language === 'tr' ? 'Veri yükleniyor...' : 'Loading data...'}</p>
+              <p className="text-gray-500">{t.title === 'Canlı Trading' ? 'Veri yükleniyor...' : t.title === 'Живая Торговля' ? 'Загрузка данных...' : t.title === 'ライブトレーディング' ? 'データ読み込み中...' : t.title === 'Live-Trading' ? 'Daten werden geladen...' : 'Loading data...'}</p>
             </div>
           )}
         </div>
@@ -513,7 +604,7 @@ export const LiveTradingDemo: React.FC = () => {
                       </p>
                       {trade.profit < 0 && (
                         <p className="text-xs text-yellow-500 mt-1">
-                          🛡️ {language === 'tr' ? 'Stop-Loss' : 'Stop-Loss'}
+                          🛡️ Stop-Loss
                         </p>
                       )}
                     </>

@@ -47,8 +47,16 @@ export const PremiumUserActivity: React.FC = () => {
       'Raj', 'Amit', 'Priya', 'Sanjay', 'Deepak', 'Anita'
     ];
     const investments = [5000, 10000, 15000, 20000, 25000, 30000, 50000, 75000, 100000];
-    const durations = ['2 gün', '5 gün', '1 hafta', '10 gün', '2 hafta', '3 hafta', '1 ay'];
-    const durationsEn = ['2 days', '5 days', '1 week', '10 days', '2 weeks', '3 weeks', '1 month'];
+    
+    const durationsByLang: Record<string, string[]> = {
+      tr: ['2 gün', '5 gün', '1 hafta', '10 gün', '2 hafta', '3 hafta', '1 ay'],
+      en: ['2 days', '5 days', '1 week', '10 days', '2 weeks', '3 weeks', '1 month'],
+      ru: ['2 дня', '5 дней', '1 неделя', '10 дней', '2 недели', '3 недели', '1 месяц'],
+      ja: ['2日', '5日', '1週間', '10日', '2週間', '3週間', '1ヶ月'],
+      de: ['2 Tage', '5 Tage', '1 Woche', '10 Tage', '2 Wochen', '3 Wochen', '1 Monat'],
+    };
+    
+    const durations = durationsByLang[language] || durationsByLang.en;
     
     const investment = investments[Math.floor(Math.random() * investments.length)];
     
@@ -77,7 +85,7 @@ export const PremiumUserActivity: React.FC = () => {
       id: Date.now() + Math.random(),
       username: maskUsername(names[Math.floor(Math.random() * names.length)]),
       investment,
-      duration: language === 'tr' ? durations[Math.floor(Math.random() * durations.length)] : durationsEn[Math.floor(Math.random() * durationsEn.length)],
+      duration: durations[Math.floor(Math.random() * durations.length)],
       profit,
       profitPercent,
       date: date.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'short' }),
@@ -98,7 +106,7 @@ export const PremiumUserActivity: React.FC = () => {
     return () => clearInterval(activityInterval);
   }, [language]);
 
-  const texts = {
+  const texts: Record<string, { title: string; subtitle: string; investment: string; duration: string; profit: string; noActivity: string; profitRate: string; stopLoss: string }> = {
     tr: {
       title: 'Premium Kullanıcı Aktiviteleri',
       subtitle: 'Gerçek kullanıcı kazançları',
@@ -106,6 +114,8 @@ export const PremiumUserActivity: React.FC = () => {
       duration: 'Süre',
       profit: 'Kazanç',
       noActivity: 'Henüz aktivite yok',
+      profitRate: 'Kar Oranı',
+      stopLoss: '🛡️ Stop-Loss Aktif',
     },
     en: {
       title: 'Premium User Activities',
@@ -114,10 +124,42 @@ export const PremiumUserActivity: React.FC = () => {
       duration: 'Duration',
       profit: 'Profit',
       noActivity: 'No activity yet',
+      profitRate: 'Profit Rate',
+      stopLoss: '🛡️ Stop-Loss Active',
+    },
+    ru: {
+      title: 'Активность Премиум Пользователей',
+      subtitle: 'Реальная прибыль пользователей',
+      investment: 'Инвестиция',
+      duration: 'Длительность',
+      profit: 'Прибыль',
+      noActivity: 'Пока нет активности',
+      profitRate: 'Процент Прибыли',
+      stopLoss: '🛡️ Stop-Loss Активен',
+    },
+    ja: {
+      title: 'プレミアムユーザーアクティビティ',
+      subtitle: '実際のユーザー利益',
+      investment: '投資',
+      duration: '期間',
+      profit: '利益',
+      noActivity: 'まだアクティビティがありません',
+      profitRate: '利益率',
+      stopLoss: '🛡️ ストップロス有効',
+    },
+    de: {
+      title: 'Premium-Benutzeraktivitäten',
+      subtitle: 'Echte Benutzergewinne',
+      investment: 'Investition',
+      duration: 'Dauer',
+      profit: 'Gewinn',
+      noActivity: 'Noch keine Aktivität',
+      profitRate: 'Gewinnrate',
+      stopLoss: '🛡️ Stop-Loss Aktiv',
     },
   };
 
-  const t = texts[language];
+  const t = texts[language] || texts.en;
 
   return (
     <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-4 shadow-xl mt-6">
@@ -181,7 +223,7 @@ export const PremiumUserActivity: React.FC = () => {
               <div className="mt-2 pt-2 border-t border-crypto-dark-500">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-400">
-                    {activity.profit >= 0 ? (language === 'tr' ? 'Kar Oranı' : 'Profit Rate') : (language === 'tr' ? '🛡️ Stop-Loss Aktif' : '🛡️ Stop-Loss Active')}
+                    {activity.profit >= 0 ? t.profitRate : t.stopLoss}
                   </span>
                   <span className={`text-xs font-bold ${activity.profit >= 0 ? 'text-buy' : 'text-sell'}`}>
                     {activity.profit >= 0 ? '+' : ''}{activity.profitPercent.toFixed(2)}%
