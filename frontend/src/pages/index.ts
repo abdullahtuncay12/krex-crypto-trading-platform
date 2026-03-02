@@ -5,3 +5,4 @@ export { HomePage } from './HomePage';
 export { DepositWithdrawPage } from './DepositWithdrawPage';
 export { SupportPage } from './SupportPage';
 export { FreeTrialPage } from './FreeTrial';
+export { PremiumUpgradePage } from './PremiumUpgradePage';

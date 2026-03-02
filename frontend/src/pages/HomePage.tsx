@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
+import { useLanguage } from '../contexts/LanguageContext';
 import { CryptoSelector, Cryptocurrency } from '../components/CryptoSelector';
 import { SignalDisplay, TradingSignal } from '../components/SignalDisplay';
 import { HistoricalChart } from '../components/HistoricalChart';
@@ -12,6 +14,7 @@ import { signalAPI } from '../api/client';
 
 export const HomePage: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
+  const { language } = useLanguage();
   const [selectedCrypto, setSelectedCrypto] = useState<Cryptocurrency | null>(null);
   const [signal, setSignal] = useState<TradingSignal | null>(null);
   const [loadingSignal, setLoadingSignal] = useState(false);
@@ -89,6 +92,58 @@ export const HomePage: React.FC = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Premium Upgrade Banner - Only for Normal Users */}
+        {user && userRole === 'normal' && (
+          <div className="mb-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-xl p-6 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <div className="flex items-center space-x-2 mb-2">
+                  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <h3 className="text-2xl font-bold">
+                    {language === 'tr' ? 'Premium\'a Yükselt!' : language === 'ru' ? 'Обновите до Premium!' : language === 'ja' ? 'プレミアムにアップグレード!' : language === 'de' ? 'Auf Premium upgraden!' : 'Upgrade to Premium!'}
+                  </h3>
+                </div>
+                <p className="text-white/90 text-lg">
+                  {language === 'tr' ? 'Gelişmiş AI bot, sınırsız sinyal ve daha fazlası...' : language === 'ru' ? 'Продвинутый AI бот, неограниченные сигналы и многое другое...' : language === 'ja' ? '高度なAIボット、無制限のシグナルなど...' : language === 'de' ? 'Fortgeschrittener AI-Bot, unbegrenzte Signale und mehr...' : 'Advanced AI bot, unlimited signals and more...'}
+                </p>
+                <div className="flex items-center space-x-4 mt-3">
+                  <div className="flex items-center space-x-1">
+                    <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">{language === 'tr' ? 'Sınırsız Sinyal' : language === 'ru' ? 'Неограниченные Сигналы' : language === 'ja' ? '無制限シグナル' : language === 'de' ? 'Unbegrenzte Signale' : 'Unlimited Signals'}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">{language === 'tr' ? 'Gelişmiş AI Bot' : language === 'ru' ? 'Продвинутый AI Бот' : language === 'ja' ? '高度なAIボット' : language === 'de' ? 'Fortgeschrittener AI-Bot' : 'Advanced AI Bot'}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm">{language === 'tr' ? 'Öncelikli Destek' : language === 'ru' ? 'Приоритетная Поддержка' : language === 'ja' ? '優先サポート' : language === 'de' ? 'Prioritäts-Support' : 'Priority Support'}</span>
+                  </div>
+                </div>
+              </div>
+              <Link
+                to="/premium"
+                className="px-8 py-4 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition shadow-lg flex items-center space-x-2 group"
+              >
+                <span>{language === 'tr' ? 'Şimdi Yükselt' : language === 'ru' ? 'Обновить Сейчас' : language === 'ja' ? '今すぐアップグレード' : language === 'de' ? 'Jetzt Upgraden' : 'Upgrade Now'}</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Content Area - 3 columns on large screens */}
           <div className="lg:col-span-3 space-y-6">

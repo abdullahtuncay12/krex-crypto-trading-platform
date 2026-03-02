@@ -14,6 +14,7 @@ import { InvestmentDashboard } from './pages/InvestmentDashboard';
 import { DepositWithdrawPage } from './pages/DepositWithdrawPage';
 import { SupportPage } from './pages/SupportPage';
 import { FreeTrialPage } from './pages/FreeTrial';
+import { PremiumUpgradePage } from './pages/PremiumUpgradePage';
 import { Navbar, PrivateRoute } from './components';
 
 function AppContent() {
@@ -75,6 +76,7 @@ function AppContent() {
             />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/free-trial" element={<FreeTrialPage />} />
+            <Route path="/premium" element={<PremiumUpgradePage />} />
             <Route 
               path="/bot/create" 
               element={
