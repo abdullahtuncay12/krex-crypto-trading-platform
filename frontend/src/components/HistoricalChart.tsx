@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,6 +38,7 @@ interface HistoricalChartProps {
 }
 
 export const HistoricalChart: React.FC<HistoricalChartProps> = ({ cryptocurrency, userRole }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState<PricePoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -270,7 +272,10 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({ cryptocurrency
             <p className="text-sm text-gray-700 mb-2">
               Unlock extended analysis with volatility metrics, trend analysis, support/resistance levels, and more
             </p>
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition">
+            <button 
+              onClick={() => navigate('/premium')}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition"
+            >
               Upgrade to Premium
             </button>
           </div>

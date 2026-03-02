@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export interface TradingSignal {
   recommendation: 'buy' | 'sell' | 'hold';
@@ -17,6 +18,8 @@ interface SignalDisplayProps {
 }
 
 export const SignalDisplay: React.FC<SignalDisplayProps> = ({ signal, userRole }) => {
+  const navigate = useNavigate();
+  
   const getRecommendationColor = (recommendation: 'buy' | 'sell' | 'hold') => {
     switch (recommendation) {
       case 'buy':
@@ -155,7 +158,10 @@ export const SignalDisplay: React.FC<SignalDisplayProps> = ({ signal, userRole }
             <p className="text-sm text-gray-600 mb-3">
               Get stop-loss recommendations, limit order suggestions, risk analysis, and detailed insights
             </p>
-            <button className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition">
+            <button 
+              onClick={() => navigate('/premium')}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition"
+            >
               Upgrade to Premium
             </button>
           </div>
