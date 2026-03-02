@@ -5,12 +5,13 @@ import { RootState } from '../store';
 import { logout } from '../store/slices/authSlice';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { LanguageSelector } from './LanguageSelector';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, token } = useSelector((state: RootState) => state.auth);
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAuthenticated = !!token && !!user;
@@ -19,10 +20,6 @@ export const Navbar: React.FC = () => {
     dispatch(logout());
     setMobileMenuOpen(false);
     navigate('/');
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === 'tr' ? 'en' : 'tr');
   };
 
   const closeMobileMenu = () => {
@@ -105,13 +102,7 @@ export const Navbar: React.FC = () => {
                 >
                   {theme === 'dark' ? '☀️' : '🌙'}
                 </button>
-                <button
-                  onClick={toggleLanguage}
-                  className="px-2 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-gray-300 dark:border-crypto-dark-500"
-                  title="Change Language"
-                >
-                  {language === 'tr' ? '🇬🇧 EN' : '🇹🇷 TR'}
-                </button>
+                <LanguageSelector />
                 <button
                   onClick={handleLogout}
                   className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
@@ -146,13 +137,7 @@ export const Navbar: React.FC = () => {
                 >
                   {theme === 'dark' ? '☀️' : '🌙'}
                 </button>
-                <button
-                  onClick={toggleLanguage}
-                  className="px-2 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:bg-crypto-dark-600 rounded transition whitespace-nowrap border border-crypto-dark-500"
-                  title="Change Language"
-                >
-                  {language === 'tr' ? '🇬🇧 EN' : '🇹🇷 TR'}
-                </button>
+                <LanguageSelector />
                 <Link
                   to="/login"
                   className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600 rounded transition whitespace-nowrap"
@@ -252,12 +237,9 @@ export const Navbar: React.FC = () => {
                 >
                   {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
                 </button>
-                <button
-                  onClick={toggleLanguage}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600"
-                >
-                  {language === 'tr' ? '🇬🇧 English' : '🇹🇷 Türkçe'}
-                </button>
+                <div className="px-3 py-2">
+                  <LanguageSelector />
+                </div>
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600"
@@ -294,12 +276,9 @@ export const Navbar: React.FC = () => {
                 >
                   {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
                 </button>
-                <button
-                  onClick={toggleLanguage}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-crypto-dark-600"
-                >
-                  {language === 'tr' ? '🇬🇧 English' : '🇹🇷 Türkçe'}
-                </button>
+                <div className="px-3 py-2">
+                  <LanguageSelector />
+                </div>
                 <Link
                   to="/login"
                   onClick={closeMobileMenu}

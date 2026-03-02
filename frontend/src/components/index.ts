@@ -27,3 +27,4 @@ export { PremiumUserActivity } from './PremiumUserActivity';
 export { LiveUserStats } from './LiveUserStats';
 export { SplashScreen } from './SplashScreen';
 export { PageTransition } from './PageTransition';
+export { LanguageSelector } from './LanguageSelector';

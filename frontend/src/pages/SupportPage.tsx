@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const SupportPage: React.FC = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,7 +13,7 @@ export const SupportPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement support ticket submission
-    alert('Destek talebiniz alındı. En kısa sürede size dönüş yapacağız.');
+    alert(t('support.form.successMessage'));
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
@@ -25,18 +27,18 @@ export const SupportPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-crypto-dark-900 py-8">
       <div className="max-w-6xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-white mb-8">Destek Merkezi</h1>
+        <h1 className="text-3xl font-bold text-white mb-8">{t('support.title')}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
-              <h2 className="text-xl font-bold text-white mb-6">Bize Ulaşın</h2>
+              <h2 className="text-xl font-bold text-white mb-6">{t('support.contactUs')}</h2>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Ad Soyad
+                    {t('support.form.name')}
                   </label>
                   <input
                     type="text"
@@ -45,13 +47,13 @@ export const SupportPage: React.FC = () => {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-crypto-dark-700 border border-crypto-dark-500 rounded text-white placeholder-gray-500 focus:outline-none focus:border-crypto-yellow-500"
-                    placeholder="Adınız ve soyadınız"
+                    placeholder={t('support.form.namePlaceholder')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    E-posta
+                    {t('support.form.email')}
                   </label>
                   <input
                     type="email"
@@ -60,13 +62,13 @@ export const SupportPage: React.FC = () => {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 bg-crypto-dark-700 border border-crypto-dark-500 rounded text-white placeholder-gray-500 focus:outline-none focus:border-crypto-yellow-500"
-                    placeholder="email@example.com"
+                    placeholder={t('support.form.emailPlaceholder')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Konu
+                    {t('support.form.subject')}
                   </label>
                   <select
                     name="subject"
@@ -75,18 +77,18 @@ export const SupportPage: React.FC = () => {
                     required
                     className="w-full px-4 py-3 bg-crypto-dark-700 border border-crypto-dark-500 rounded text-white focus:outline-none focus:border-crypto-yellow-500"
                   >
-                    <option value="">Konu seçin</option>
-                    <option value="account">Hesap Sorunları</option>
-                    <option value="deposit">Yatırma/Çekme</option>
-                    <option value="trading">Trading Bot</option>
-                    <option value="technical">Teknik Destek</option>
-                    <option value="other">Diğer</option>
+                    <option value="">{t('support.form.subjectPlaceholder')}</option>
+                    <option value="account">{t('support.form.subjectOptions.account')}</option>
+                    <option value="deposit">{t('support.form.subjectOptions.deposit')}</option>
+                    <option value="trading">{t('support.form.subjectOptions.trading')}</option>
+                    <option value="technical">{t('support.form.subjectOptions.technical')}</option>
+                    <option value="other">{t('support.form.subjectOptions.other')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Mesajınız
+                    {t('support.form.message')}
                   </label>
                   <textarea
                     name="message"
@@ -95,7 +97,7 @@ export const SupportPage: React.FC = () => {
                     required
                     rows={6}
                     className="w-full px-4 py-3 bg-crypto-dark-700 border border-crypto-dark-500 rounded text-white placeholder-gray-500 focus:outline-none focus:border-crypto-yellow-500 resize-none"
-                    placeholder="Lütfen sorununuzu detaylı bir şekilde açıklayın..."
+                    placeholder={t('support.form.messagePlaceholder')}
                   />
                 </div>
 
@@ -103,7 +105,7 @@ export const SupportPage: React.FC = () => {
                   type="submit"
                   className="w-full py-3 bg-crypto-yellow-500 hover:bg-crypto-yellow-600 text-crypto-dark-900 font-bold rounded transition"
                 >
-                  Gönder
+                  {t('support.form.submit')}
                 </button>
               </form>
             </div>
@@ -113,7 +115,7 @@ export const SupportPage: React.FC = () => {
           <div className="space-y-6">
             {/* Contact Info */}
             <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
-              <h3 className="text-lg font-bold text-white mb-4">İletişim Bilgileri</h3>
+              <h3 className="text-lg font-bold text-white mb-4">{t('support.contactInfo.title')}</h3>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <svg className="w-5 h-5 text-crypto-yellow-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -121,7 +123,7 @@ export const SupportPage: React.FC = () => {
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-gray-300">E-posta</p>
+                    <p className="text-sm font-medium text-gray-300">{t('support.contactInfo.email')}</p>
                     <p className="text-sm text-gray-400">support@cryptosignals.com</p>
                   </div>
                 </div>
@@ -131,7 +133,7 @@ export const SupportPage: React.FC = () => {
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-gray-300">Telefon</p>
+                    <p className="text-sm font-medium text-gray-300">{t('support.contactInfo.phone')}</p>
                     <p className="text-sm text-gray-400">+90 (212) 555 0123</p>
                   </div>
                 </div>
@@ -141,8 +143,8 @@ export const SupportPage: React.FC = () => {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <p className="text-sm font-medium text-gray-300">Çalışma Saatleri</p>
-                    <p className="text-sm text-gray-400">7/24 Destek</p>
+                    <p className="text-sm font-medium text-gray-300">{t('support.contactInfo.hours')}</p>
+                    <p className="text-sm text-gray-400">{t('support.contactInfo.hoursValue')}</p>
                   </div>
                 </div>
               </div>
@@ -150,19 +152,19 @@ export const SupportPage: React.FC = () => {
 
             {/* FAQ */}
             <div className="bg-crypto-dark-800 rounded-lg border border-crypto-dark-500 p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Sık Sorulan Sorular</h3>
+              <h3 className="text-lg font-bold text-white mb-4">{t('support.faq.title')}</h3>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-300 mb-1">Hesabımı nasıl doğrularım?</p>
-                  <p className="text-xs text-gray-400">Profil ayarlarından kimlik doğrulama bölümüne gidin.</p>
+                  <p className="text-sm font-medium text-gray-300 mb-1">{t('support.faq.q1')}</p>
+                  <p className="text-xs text-gray-400">{t('support.faq.a1')}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-300 mb-1">Para çekme süresi ne kadar?</p>
-                  <p className="text-xs text-gray-400">Çekim işlemleri 1-3 iş günü içinde tamamlanır.</p>
+                  <p className="text-sm font-medium text-gray-300 mb-1">{t('support.faq.q2')}</p>
+                  <p className="text-xs text-gray-400">{t('support.faq.a2')}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-300 mb-1">Trading bot nasıl çalışır?</p>
-                  <p className="text-xs text-gray-400">Bot, AI algoritmaları ile otomatik alım-satım yapar.</p>
+                  <p className="text-sm font-medium text-gray-300 mb-1">{t('support.faq.q3')}</p>
+                  <p className="text-xs text-gray-400">{t('support.faq.a3')}</p>
                 </div>
               </div>
             </div>

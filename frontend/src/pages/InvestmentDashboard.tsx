@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchInvestments, clearError } from '../store/slices/botInvestmentSlice';
 import { InvestmentCard } from '../components/InvestmentCard';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const InvestmentDashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
   const { investments, loading, error } = useAppSelector((state) => state.botInvestment);
+  const { t } = useLanguage();
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -73,7 +75,7 @@ export const InvestmentDashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto mt-8 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Yatırım Paneli</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h1>
         <div className="flex space-x-3">
           <button
             onClick={handleRefresh}
@@ -93,7 +95,7 @@ export const InvestmentDashboard: React.FC = () => {
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            Yenile
+            {t('dashboard.refresh')}
           </button>
           <button
             onClick={() => navigate('/bot/create')}
@@ -102,7 +104,7 @@ export const InvestmentDashboard: React.FC = () => {
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Yeni Yatırım
+            {t('dashboard.newInvestment')}
           </button>
         </div>
       </div>
@@ -117,7 +119,7 @@ export const InvestmentDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Aktif Yatırımlar</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('dashboard.activeInvestments')}</h3>
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -131,13 +133,13 @@ export const InvestmentDashboard: React.FC = () => {
           </div>
           <p className="text-3xl font-bold text-gray-900">{activeInvestments.length}</p>
           <p className="text-sm text-gray-500 mt-1">
-            Toplam: {formatCurrency(totalPortfolioValue)} USDT
+            {t('dashboard.total')}: {formatCurrency(totalPortfolioValue)} USDT
           </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Güncel Kar/Zarar</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('dashboard.currentProfitLoss')}</h3>
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 currentProfit >= 0 ? 'bg-green-100' : 'bg-red-100'
@@ -170,7 +172,7 @@ export const InvestmentDashboard: React.FC = () => {
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Tamamlanan</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('dashboard.completed')}</h3>
             <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -183,12 +185,12 @@ export const InvestmentDashboard: React.FC = () => {
             </div>
           </div>
           <p className="text-3xl font-bold text-gray-900">{completedInvestments.length}</p>
-          <p className="text-sm text-gray-500 mt-1">Toplam yatırım</p>
+          <p className="text-sm text-gray-500 mt-1">{t('dashboard.totalInvestment')}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Toplam Kar</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('dashboard.totalProfit')}</h3>
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 lifetimeProfit >= 0 ? 'bg-green-100' : 'bg-red-100'
@@ -222,7 +224,7 @@ export const InvestmentDashboard: React.FC = () => {
 
       {/* Active Investments Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Aktif Yatırımlar</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('dashboard.activeInvestments')}</h2>
         {loading && activeInvestments.length === 0 ? (
           <div className="flex items-center justify-center h-64 bg-white rounded-lg shadow-md">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -242,13 +244,13 @@ export const InvestmentDashboard: React.FC = () => {
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               />
             </svg>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aktif yatırım bulunmuyor</h3>
-            <p className="text-gray-600 mb-4">Yeni bir yatırım oluşturarak başlayın</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('dashboard.noActiveInvestments')}</h3>
+            <p className="text-gray-600 mb-4">{t('dashboard.startNewInvestment')}</p>
             <button
               onClick={() => navigate('/bot/create')}
               className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium"
             >
-              Yeni Yatırım Oluştur
+              {t('dashboard.createNewInvestment')}
             </button>
           </div>
         ) : (
@@ -267,7 +269,7 @@ export const InvestmentDashboard: React.FC = () => {
       {/* Completed Investments Section */}
       {completedInvestments.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Tamamlanan Yatırımlar</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('dashboard.completedInvestments')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {completedInvestments.map((investment) => (
               <InvestmentCard key={investment.id} investment={investment} />
@@ -279,7 +281,7 @@ export const InvestmentDashboard: React.FC = () => {
       {/* Cancelled Investments Section */}
       {cancelledInvestments.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">İptal Edilen Yatırımlar</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('dashboard.cancelledInvestments')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cancelledInvestments.map((investment) => (
               <InvestmentCard key={investment.id} investment={investment} />
