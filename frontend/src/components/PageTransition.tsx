@@ -90,8 +90,8 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ show, variant = 
           {/* Logo */}
           <div className="relative">
             <img
-              src="/logo.png"
-              alt="MoonLlama"
+              src="/yatirma-cekme-logo.png"
+              alt="MoonLlama Money"
               className="w-32 h-32 md:w-48 md:h-48 rounded-full shadow-2xl"
             />
           </div>
