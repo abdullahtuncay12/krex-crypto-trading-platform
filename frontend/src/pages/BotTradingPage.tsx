@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { createInvestment, clearError } from '../store/slices/botInvestmentSlice';
 import RiskDisclosureModal from '../components/RiskDisclosureModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const SUPPORTED_CRYPTOCURRENCIES = [
   { value: 'BTC', label: 'Bitcoin (BTC)' },
@@ -10,19 +11,6 @@ const SUPPORTED_CRYPTOCURRENCIES = [
   { value: 'BNB', label: 'Binance Coin (BNB)' },
   { value: 'SOL', label: 'Solana (SOL)' },
   { value: 'ADA', label: 'Cardano (ADA)' },
-];
-
-const TRADING_PERIODS = [
-  { value: 1, label: '1 Saat' },
-  { value: 2, label: '2 Saat' },
-  { value: 3, label: '3 Saat' },
-  { value: 4, label: '4 Saat' },
-  { value: 5, label: '5 Saat' },
-  { value: 6, label: '6 Saat' },
-  { value: 12, label: '12 Saat' },
-  { value: 24, label: '24 Saat' },
-  { value: 48, label: '48 Saat' },
-  { value: 60, label: '60 Saat' },
 ];
 
 const MIN_AMOUNT = 100;
@@ -33,6 +21,7 @@ export const BotTradingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
   const { loading, error } = useAppSelector((state) => state.botInvestment);
+  const { t } = useLanguage();
 
   const [selectedCrypto, setSelectedCrypto] = useState('BTC');
   const [amount, setAmount] = useState('');
@@ -42,6 +31,20 @@ export const BotTradingPage: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<{
     amount?: string;
   }>({});
+
+  // Trading periods with translations
+  const TRADING_PERIODS = [
+    { value: 1, label: t('botTrading.periods.1') },
+    { value: 2, label: t('botTrading.periods.2') },
+    { value: 3, label: t('botTrading.periods.3') },
+    { value: 4, label: t('botTrading.periods.4') },
+    { value: 5, label: t('botTrading.periods.5') },
+    { value: 6, label: t('botTrading.periods.6') },
+    { value: 12, label: t('botTrading.periods.12') },
+    { value: 24, label: t('botTrading.periods.24') },
+    { value: 48, label: t('botTrading.periods.48') },
+    { value: 60, label: t('botTrading.periods.60') },
+  ];
 
   // Redirect if not premium
   useEffect(() => {
@@ -62,13 +65,13 @@ export const BotTradingPage: React.FC = () => {
     const numValue = parseFloat(value);
 
     if (!value) {
-      errors.amount = 'Yatırım tutarı gereklidir';
+      errors.amount = t('botTrading.errors.amountRequired');
     } else if (isNaN(numValue)) {
-      errors.amount = 'Geçerli bir tutar giriniz';
+      errors.amount = t('botTrading.errors.amountInvalid');
     } else if (numValue < MIN_AMOUNT) {
-      errors.amount = `Minimum yatırım tutarı ${MIN_AMOUNT} USDT'dir`;
+      errors.amount = t('botTrading.errors.amountTooLow').replace('{min}', MIN_AMOUNT.toString());
     } else if (numValue > MAX_AMOUNT) {
-      errors.amount = `Maximum yatırım tutarı ${MAX_AMOUNT} USDT'dir`;
+      errors.amount = t('botTrading.errors.amountTooHigh').replace('{max}', MAX_AMOUNT.toLocaleString());
     }
 
     setValidationErrors(errors);
@@ -131,13 +134,12 @@ export const BotTradingPage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">
-        Otomatik Ticaret Botu
+        {t('botTrading.title')}
       </h2>
 
       <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800">
-          AI destekli otomatik ticaret botu ile kripto para yatırımı yapın. Bot, belirlediğiniz süre boyunca
-          otomatik olarak alım-satım işlemleri gerçekleştirir.
+          {t('botTrading.description')}
         </p>
       </div>
 
@@ -151,7 +153,7 @@ export const BotTradingPage: React.FC = () => {
         {/* Cryptocurrency Selector */}
         <div>
           <label htmlFor="cryptocurrency" className="block text-sm font-medium text-gray-700 mb-1">
-            Kripto Para
+            {t('botTrading.cryptoLabel')}
           </label>
           <select
             id="cryptocurrency"
@@ -171,7 +173,7 @@ export const BotTradingPage: React.FC = () => {
         {/* Amount Input */}
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-            Yatırım Tutarı (USDT)
+            {t('botTrading.amountLabel')}
           </label>
           <input
             id="amount"
@@ -183,7 +185,7 @@ export const BotTradingPage: React.FC = () => {
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-blue-500'
             }`}
-            placeholder={`${MIN_AMOUNT} - ${MAX_AMOUNT} USDT`}
+            placeholder={t('botTrading.amountPlaceholder')}
             disabled={loading}
             min={MIN_AMOUNT}
             max={MAX_AMOUNT}
@@ -193,14 +195,14 @@ export const BotTradingPage: React.FC = () => {
             <p className="mt-1 text-sm text-red-600">{validationErrors.amount}</p>
           )}
           <p className="mt-1 text-xs text-gray-500">
-            Minimum: {MIN_AMOUNT} USDT, Maximum: {MAX_AMOUNT.toLocaleString()} USDT
+            {t('botTrading.amountMin')}: {MIN_AMOUNT} USDT, {t('botTrading.amountMax')}: {MAX_AMOUNT.toLocaleString()} USDT
           </p>
         </div>
 
         {/* Trading Period Selector */}
         <div>
           <label htmlFor="period" className="block text-sm font-medium text-gray-700 mb-1">
-            İşlem Süresi
+            {t('botTrading.periodLabel')}
           </label>
           <select
             id="period"
@@ -216,7 +218,7 @@ export const BotTradingPage: React.FC = () => {
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            Bot, seçtiğiniz süre boyunca otomatik işlem yapacaktır
+            {t('botTrading.periodHelp')}
           </p>
         </div>
 
@@ -226,7 +228,7 @@ export const BotTradingPage: React.FC = () => {
           disabled={loading}
           className="w-full bg-blue-500 text-white py-3 px-4 rounded hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
         >
-          {loading ? 'Yatırım Oluşturuluyor...' : 'Yatırım Oluştur'}
+          {loading ? t('botTrading.submitting') : t('botTrading.submitButton')}
         </button>
       </form>
 
@@ -247,10 +249,9 @@ export const BotTradingPage: React.FC = () => {
             />
           </svg>
           <div>
-            <p className="text-sm text-yellow-800 font-semibold">Risk Uyarısı</p>
+            <p className="text-sm text-yellow-800 font-semibold">{t('botTrading.riskWarningTitle')}</p>
             <p className="text-sm text-yellow-700 mt-1">
-              Kripto para yatırımları yüksek risk içerir. Yatırım yapmadan önce risk bildirimini okuyup
-              onaylamanız gerekmektedir.
+              {t('botTrading.riskWarningText')}
             </p>
           </div>
         </div>
